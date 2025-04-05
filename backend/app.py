@@ -3,10 +3,14 @@ import os
 from flask import Flask, request,jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
+from flask_cors import CORS
 from controller import usuarioController
 
 # Definindo aplicação Flask
 app = Flask(__name__)
+
+# Ativando CORS
+CORS(app,supports_credentials=True)
 
 # Carregando variáveis de ambiente (arquivo .env)
 load_dotenv()
@@ -25,7 +29,7 @@ class Usuario(UserMixin):
     def __init__(self, id):
         self.id = id
 
-# Função para
+# Função para carregar usuário da sessão
 @login_manager.user_loader
 def load_user(usuario_id):
     if usuarioController.verificaUsuario(usuario_id):
@@ -40,7 +44,7 @@ def cadastro():
     nome , senha = request.json["nome"] , request.json["senha"]
 
     if usuarioController.criaUsuario(nome,senha):
-        return jsonify({"Mensagem":"Usuário cadastrado."}),200
+        return jsonify({"Mensagem":"Usuário cadastrado."}),201
     else:
         return jsonify({"Mensagem":"Falha ao cadastrar usuário."}),400
 
@@ -62,14 +66,15 @@ def login():
 
 # Rota para deslogar o usuário
 @app.route("/logout", methods=["GET"])
+@login_required
 def logout():
     logout_user()
     return jsonify({"Mensagem": "Usuário deslogado."}),200
 
-# Rota para exibir dados do usuário
-@app.route("/perfil", methods=["GET"])
+# Rota para retornar os dados do usuário
+@app.route("/usuario", methods=["GET"])
 @login_required
-def perfil():
+def usuario():
     nome = usuarioController.retornaUsuarioNome(current_user.id)
     return jsonify({"ID": current_user.id,"Nome": nome}),200
 
