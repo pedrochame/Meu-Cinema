@@ -85,7 +85,7 @@ def usuario():
 def filmes_populares():
     url = "https://api.themoviedb.org/3/movie/popular"
     params = {
-        "api_key": "8ac6c3322c28452ea788ddfcfa3cb8b1",
+        "api_key": "",
         "language": "pt-BR",
         "page": 1
     }
