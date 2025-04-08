@@ -1,5 +1,6 @@
 # Importanto bibliotecas necessárias
 import os
+import requests
 from flask import Flask, request,jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
@@ -78,6 +79,25 @@ def usuario():
     nome = usuarioController.retornaUsuarioNome(current_user.id)
     return jsonify({"ID": current_user.id,"Nome": nome}),200
 
+# Rota para retornar filmes populares (requisitando API TMDB)
+@app.route("/filmes_populares",methods=["GET"])
+@login_required
+def filmes_populares():
+    url = "https://api.themoviedb.org/3/movie/popular"
+    params = {
+        "api_key": "8ac6c3322c28452ea788ddfcfa3cb8b1",
+        "language": "pt-BR",
+        "page": 1
+    }
+
+    resposta = requests.get(url, params=params)
+    return resposta.json()
+
+# Personalizando resposta para usuário não autorizado
+@login_manager.unauthorized_handler
+def unauthorized():
+    return jsonify({"Mensagem": "Usuário não autenticado."}), 401
+
 # Executando aplicação
-if __name__ == "__main__": 
+if __name__ == "__main__":
     app.run(debug=True)
