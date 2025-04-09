@@ -85,12 +85,13 @@ def usuario():
 def filmes_populares():
     url = "https://api.themoviedb.org/3/movie/popular"
     params = {
-        "api_key": "",
+        "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
         "page": 1
     }
 
     resposta = requests.get(url, params=params)
+    print(resposta.json())
     return resposta.json()
 
 # Personalizando resposta para usuário não autorizado
