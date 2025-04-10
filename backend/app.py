@@ -139,6 +139,34 @@ def pesquisa_series():
     resposta = requests.get(url, params=params)
     return resposta.json()
 
+# Rota para retornar um filme específico (requisitando API TMDB)
+@app.route("/filmes/<int:idFilme>",methods=["GET"])
+@login_required
+def getFilme(idFilme):
+
+    url = "https://api.themoviedb.org/3/movie/"+str(idFilme)
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+    }
+
+    resposta = requests.get(url, params=params)
+    return resposta.json()
+
+# Rota para retornar um programa de tv específico (requisitando API TMDB)
+@app.route("/series/<int:idFilme>",methods=["GET"])
+@login_required
+def getSerie(idFilme):
+
+    url = "https://api.themoviedb.org/3/tv/"+str(idFilme)
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+    }
+
+    resposta = requests.get(url, params=params)
+    return resposta.json()
+
 # Personalizando resposta para usuário não autorizado
 @login_manager.unauthorized_handler
 def unauthorized():

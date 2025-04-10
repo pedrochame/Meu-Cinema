@@ -54,8 +54,6 @@ async function buscaUsuario(){
         credentials:"include"
     });
 
-    let dados = await response.json();
-
     if(response.status == 401){
         window.location = "login.html";
     }
@@ -102,9 +100,12 @@ function configuraDiv(tipoFilme,filme){
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-fluid' src='https://image.tmdb.org/t/p/w300{imagem}'></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>{data_label}</b><p>{data}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>Nota Média do IMDB: </b><p>{nota}</p></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><a href='detalhes.html?tipo={tipo}&idFilme={id}' target='_blank' class='btn btn-primary'>Detalhes</a></div>";
 
     if(tipoFilme){
         filmeDiv.innerHTML = filmeDiv.innerHTML
+        .replace("{id}",filme["id"])
+        .replace("{tipo}","filme")
         .replace("{titulo}",filme["title"])
         .replace("{imagem}",filme["poster_path"])
         .replace("{data_label}","Data de Lançamento")
@@ -113,6 +114,8 @@ function configuraDiv(tipoFilme,filme){
         painelFilmes.appendChild(filmeDiv);
     }else{
         filmeDiv.innerHTML = filmeDiv.innerHTML
+        .replace("{id}",filme["id"])
+        .replace("{tipo}","serie")
         .replace("{titulo}",filme["name"])
         .replace("{imagem}",filme["poster_path"])
         .replace("{data_label}","Data de Estreia")
