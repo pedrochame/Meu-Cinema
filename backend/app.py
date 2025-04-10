@@ -93,7 +93,7 @@ def filmes_populares():
     resposta = requests.get(url, params=params)
     return resposta.json()
 
-# Rota para retornar séries populares (requisitando API TMDB)
+# Rota para retornar programas de tv populares (requisitando API TMDB)
 @app.route("/series_populares",methods=["GET"])
 @login_required
 def series_populares():
@@ -102,6 +102,38 @@ def series_populares():
         "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
         "page": 1
+    }
+
+    resposta = requests.get(url, params=params)
+    return resposta.json()
+
+# Rota para retornar filmes buscados (requisitando API TMDB)
+@app.route("/pesquisa_filmes",methods=["GET"])
+@login_required
+def pesquisa_filmes():
+
+    url = "https://api.themoviedb.org/3/search/movie"
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+        "page": 1,
+        "query": request.args.get("termoBusca"),
+    }
+
+    resposta = requests.get(url, params=params)
+    return resposta.json()
+
+# Rota para retornar programas de tv buscados (requisitando API TMDB)
+@app.route("/pesquisa_series",methods=["GET"])
+@login_required
+def pesquisa_series():
+
+    url = "https://api.themoviedb.org/3/search/tv"
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+        "page": 1,
+        "query": request.args.get("termoBusca"),
     }
 
     resposta = requests.get(url, params=params)

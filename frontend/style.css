@@ -1,0 +1,15 @@
+.filme-div{
+    width: 250px;
+    border: 2px solid black;
+    border-radius: 8px;
+}
+.filme-div b{
+    font-size: smaller;
+}
+.filme-div p{
+    font-size: smaller;
+}
+.filme-div img{
+    border-radius: 8px;
+    border: 1px solid black;
+}
