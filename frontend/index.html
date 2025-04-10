@@ -9,7 +9,23 @@
 </head>
 <body>
 
-    <div id="painel-filmes" class="d-flex flex-wrap gap-3 justify-content-center">
+    <div class="m-4">
+        <div class="d-flex justify-content-center"><h3>BUSCAR</h3></div>
+        <div id="painel-buscar" class="d-flex flex-wrap gap-3 justify-content-center">
+            <input class="form-control" placeholder="Digite um título aqui" id="campoBusca">
+            <input class="btn btn-primary" type="button" value="Buscar Filme" id="btBuscarFilme">
+            <input class="btn btn-primary" type="button" value="Buscar Programa de TV" id="btBuscarSerie">
+        </div>
+    </div>
+    
+    <div class="m-2">
+        <div class="d-flex justify-content-center"><h3>FILMES POPULARES</h3></div>
+        <div id="painel-filmes" class="d-flex flex-wrap gap-3 justify-content-center"></div>
+    </div>
+
+    <div class="m-2">
+        <div class="d-flex justify-content-center"><h3>PROGRAMAS DE TV POPULARES</h3></div>
+        <div id="painel-series" class="d-flex flex-wrap gap-3 justify-content-center"></div>
     </div>
 
 </body>

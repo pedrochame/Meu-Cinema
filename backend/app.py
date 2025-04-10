@@ -91,7 +91,20 @@ def filmes_populares():
     }
 
     resposta = requests.get(url, params=params)
-    print(resposta.json())
+    return resposta.json()
+
+# Rota para retornar séries populares (requisitando API TMDB)
+@app.route("/series_populares",methods=["GET"])
+@login_required
+def series_populares():
+    url = "https://api.themoviedb.org/3/tv/popular"
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+        "page": 1
+    }
+
+    resposta = requests.get(url, params=params)
     return resposta.json()
 
 # Personalizando resposta para usuário não autorizado
