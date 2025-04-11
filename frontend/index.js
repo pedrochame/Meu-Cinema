@@ -21,7 +21,7 @@ async function pesquisa(){
     painelFilmes.innerHTML = "";
     painelSeries.innerHTML = "";
 
-    let response = await fetch("http://127.0.0.1:5000/pesquisa_filmes?termoBusca="+termoBusca,{
+    let response = await fetch(rota_filmes_busca+termoBusca,{
         method:"GET",
         credentials:"include",
     });
@@ -34,7 +34,7 @@ async function pesquisa(){
     configuraPainel(true,dados["results"]);  
 
 
-    response = await fetch("http://127.0.0.1:5000/pesquisa_series?termoBusca="+termoBusca,{
+    response = await fetch(rota_series_busca+termoBusca,{
         method:"GET",
         credentials:"include",
     });
@@ -49,7 +49,7 @@ async function pesquisa(){
 }
 
 async function buscaUsuario(){
-    let response = await fetch("http://127.0.0.1:5000/usuario",{
+    let response = await fetch(rota_usuario,{
         method:"GET",
         credentials:"include"
     });
@@ -61,7 +61,7 @@ async function buscaUsuario(){
 
 async function buscaSeriesPopulares(){
 
-    let response = await fetch("http://127.0.0.1:5000/series_populares",{
+    let response = await fetch(rota_series,{
         method:"GET",
         credentials:"include",
         
@@ -78,7 +78,7 @@ async function buscaSeriesPopulares(){
 
 async function buscaFilmesPopulares(){
 
-    let response = await fetch("http://127.0.0.1:5000/filmes_populares",{
+    let response = await fetch(rota_filmes,{
         method:"GET",
         credentials:"include"
     });
@@ -98,9 +98,9 @@ function configuraDiv(tipoFilme,filme){
     filmeDiv.className = "filme-div p-3 container m-3";
     filmeDiv.innerHTML = "<div class='d-flex justify-content-center'><b>{titulo}</b></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-fluid' src='https://image.tmdb.org/t/p/w300{imagem}'></div>";
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>{data_label}</b><p>{data}</p></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>{data_label}:</b><p>{data}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>Nota Média do IMDB: </b><p>{nota}</p></div>";
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><a href='detalhes.html?tipo={tipo}&idFilme={id}' target='_blank' class='btn btn-primary'>Detalhes</a></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><a href='detalhes.html?tipo={tipo}&id={id}' target='_blank' class='btn btn-primary'>Detalhes</a></div>";
 
     if(tipoFilme){
         filmeDiv.innerHTML = filmeDiv.innerHTML
@@ -109,7 +109,7 @@ function configuraDiv(tipoFilme,filme){
         .replace("{titulo}",filme["title"])
         .replace("{imagem}",filme["poster_path"])
         .replace("{data_label}","Data de Lançamento")
-        .replace("{data}",filme["release_date"])
+        .replace("{data}",converteData(filme["release_date"]))
         .replace("{nota}",filme["vote_average"]);
         painelFilmes.appendChild(filmeDiv);
     }else{
@@ -119,7 +119,7 @@ function configuraDiv(tipoFilme,filme){
         .replace("{titulo}",filme["name"])
         .replace("{imagem}",filme["poster_path"])
         .replace("{data_label}","Data de Estreia")
-        .replace("{data}",filme["first_air_date"])
+        .replace("{data}",converteData(filme["first_air_date"]))
         .replace("{nota}",filme["vote_average"]);
         painelSeries.appendChild(filmeDiv);
     }

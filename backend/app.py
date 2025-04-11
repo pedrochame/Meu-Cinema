@@ -79,11 +79,11 @@ def usuario():
     nome = usuarioController.retornaUsuarioNome(current_user.id)
     return jsonify({"ID": current_user.id,"Nome": nome}),200
 
-# Rota para retornar filmes populares (requisitando API TMDB)
-@app.route("/filmes_populares",methods=["GET"])
+# Rota para retornar filmes mais bem avaliados (requisitando API TMDB)
+@app.route("/filmes",methods=["GET"])
 @login_required
-def filmes_populares():
-    url = "https://api.themoviedb.org/3/movie/popular"
+def filmes():
+    url = "https://api.themoviedb.org/3/movie/top_rated"
     params = {
         "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
@@ -93,11 +93,11 @@ def filmes_populares():
     resposta = requests.get(url, params=params)
     return resposta.json()
 
-# Rota para retornar programas de tv populares (requisitando API TMDB)
-@app.route("/series_populares",methods=["GET"])
+# Rota para retornar programas de tv mais bem avaliados (requisitando API TMDB)
+@app.route("/series",methods=["GET"])
 @login_required
-def series_populares():
-    url = "https://api.themoviedb.org/3/tv/popular"
+def series():
+    url = "https://api.themoviedb.org/3/tv/top_rated"
     params = {
         "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
@@ -108,9 +108,9 @@ def series_populares():
     return resposta.json()
 
 # Rota para retornar filmes buscados (requisitando API TMDB)
-@app.route("/pesquisa_filmes",methods=["GET"])
+@app.route("/filmes_busca",methods=["GET"])
 @login_required
-def pesquisa_filmes():
+def filmes_busca():
 
     url = "https://api.themoviedb.org/3/search/movie"
     params = {
@@ -124,9 +124,9 @@ def pesquisa_filmes():
     return resposta.json()
 
 # Rota para retornar programas de tv buscados (requisitando API TMDB)
-@app.route("/pesquisa_series",methods=["GET"])
+@app.route("/series_busca",methods=["GET"])
 @login_required
-def pesquisa_series():
+def series_busca():
 
     url = "https://api.themoviedb.org/3/search/tv"
     params = {
@@ -140,11 +140,11 @@ def pesquisa_series():
     return resposta.json()
 
 # Rota para retornar um filme específico (requisitando API TMDB)
-@app.route("/filmes/<int:idFilme>",methods=["GET"])
+@app.route("/filmes/<int:id>",methods=["GET"])
 @login_required
-def getFilme(idFilme):
+def getFilme(id):
 
-    url = "https://api.themoviedb.org/3/movie/"+str(idFilme)
+    url = "https://api.themoviedb.org/3/movie/"+str(id)
     params = {
         "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
@@ -154,11 +154,11 @@ def getFilme(idFilme):
     return resposta.json()
 
 # Rota para retornar um programa de tv específico (requisitando API TMDB)
-@app.route("/series/<int:idFilme>",methods=["GET"])
+@app.route("/series/<int:id>",methods=["GET"])
 @login_required
-def getSerie(idFilme):
+def getSerie(id):
 
-    url = "https://api.themoviedb.org/3/tv/"+str(idFilme)
+    url = "https://api.themoviedb.org/3/tv/"+str(id)
     params = {
         "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
