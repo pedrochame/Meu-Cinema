@@ -50,4 +50,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     if(usuario != null){
         window.location = "perfil.html";
     }
+    exibirPagina();
 });

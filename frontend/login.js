@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if(usuario != null){
         redireciona(caminho_tela_perfil);
     }
+    exibirPagina();
 });
 
 // Quando algum campo for focado, a mensagem de informação deixa de ser exibida

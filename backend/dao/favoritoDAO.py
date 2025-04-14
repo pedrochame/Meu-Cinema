@@ -12,7 +12,7 @@ class favoritoDAO():
     def buscaFavoritos(self,usuario_id):
         conexao = sqlite3.connect(bd_path)
         cursor = conexao.cursor()
-        cursor.execute("select filme_id,tipo from favorito where usuario_id = ?",[int(usuario_id)])
+        cursor.execute("select filme_id,tipo from favorito where usuario_id = ? order by filme_id",[int(usuario_id)])
         registros = cursor.fetchall()
         conexao.close()
 

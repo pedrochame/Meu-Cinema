@@ -1,9 +1,6 @@
 // Variáveis da tela principal
 let painelFilmes = document.querySelector("#painel-filmes");
 let painelSeries = document.querySelector("#painel-series");
-let campoBusca = document.querySelector("#campoBusca");
-let btBuscar = document.querySelector("#btBuscar");
-let btFavoritos = document.querySelector("#btFavoritos");
 
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
@@ -13,79 +10,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if(usuario == null){
         redireciona(caminho_tela_login);
     }else{
-        await filmes();
-        await series();
+        await favoritos();
     }
     exibirPagina();
 });
 
-// Quando o botão de favoritos é clicado, redirecionamos o usuário para sua página de favoritos.
-btFavoritos.addEventListener("click", async () => {
-    redireciona("favoritos.html")
-});
+// Função que faz requsição ao back-end na rota de favoritos
+async function favoritos(){
 
-// Quando o botão de busca é clicado, chamamos a função que se comunicará com o back-end na rota de pesquisa.
-btBuscar.addEventListener("click", async () => {
-    await busca();
-});
-
-// Função de pesquisa faz duas requisições ao back-end, na rota de pesquisa de filmes e na rota de pesquisa de séries.
-// Depois, chamamos a função que irá configurar os painéis estabelecidos na página, criando as DIVs que representarão cada um dos filmes/séries para serem exibidos na tela.
-async function busca(){
-
-    let termoBusca = campoBusca.value;
-
-    painelFilmes.innerHTML = "";
-    painelSeries.innerHTML = "";
-
-    let responseFilmes = await fetch(rota_filmes_busca+termoBusca,{
-        method:"GET",
-        credentials:"include",
-    });
-
-    let responseSeries = await fetch(rota_series_busca+termoBusca,{
-        method:"GET",
-        credentials:"include",
-    });
-
-    if(responseSeries.status == 401 || responseFilmes.status == 401){
-        redireciona(caminho_tela_login);
-    }
-
-    let dadosFilmes = await responseFilmes.json();
-    configuraPainel(true,dadosFilmes["results"]);  
-
-    let dadosSeries = await responseSeries.json();
-    configuraPainel(false,dadosSeries["results"]);
-
-}
-
-// Função que faz requsição ao back-end na rota de séries
-async function series(){
-
-    let response = await fetch(rota_series,{
-        method:"GET",
-        credentials:"include",
-        
-    });
-
-    switch(response.status){
-        case 401:
-            redireciona(caminho_tela_login);
-        break;
-        
-        case 200:
-            let dados = await response.json();
-            configuraPainel(false,dados["results"]);
-        break;
-    }
-
-}
-
-// Função que faz requsição ao back-end na rota de filmes
-async function filmes(){
-
-    let response = await fetch(rota_filmes,{
+    let response = await fetch(rota_favoritos,{
         method:"GET",
         credentials:"include"
     });
@@ -97,7 +30,9 @@ async function filmes(){
         
         case 200:
             let dados = await response.json();
-            configuraPainel(true,dados["results"]);
+            console.log(dados);
+            configuraPainel(true,dados["filme"]);
+            configuraPainel(false,dados["serie"]);
         break;
     }
 
@@ -150,6 +85,6 @@ function configuraDiv(tipoFilme,filme){
 // Função que recebe um json de filmes/séries, e chama a função que configura uma DIV para cada um deles
 function configuraPainel(tipoFilme, filmes){
     filmes.forEach(filme => {
-        configuraDiv(tipoFilme,filme);
+            configuraDiv(tipoFilme,filme);
     });
 }

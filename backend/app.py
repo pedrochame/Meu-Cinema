@@ -239,18 +239,27 @@ def buscaFavoritos():
 
     favoritos = favoritoController.buscaFavoritos(current_user.id)
     
-    favoritos_json = []
-    for favorito in favoritos:
-        
-        if favorito["tipo"] == "filme": url = "https://api.themoviedb.org/3/movie/"+favorito["filme_id"]
-        if favorito["tipo"] == "serie": url = "https://api.themoviedb.org/3/tv/"+favorito["filme_id"]
-        params = {
+    favoritos_json = {
+        "filme":[],
+        "serie":[]
+    }
+
+    params = {
             "api_key": os.getenv("CHAVE_API_TMDB"),
             "language": "pt-BR",
-        }
+    }
 
-        resposta = requests.get(url, params=params)
-        favoritos_json.append(resposta.json())
+    for favorito in favoritos:
+        
+        if favorito["tipo"] == "filme": 
+            url = "https://api.themoviedb.org/3/movie/"+favorito["filme_id"]
+            resposta = requests.get(url, params=params)
+            favoritos_json["filme"].append(resposta.json())
+            
+        if favorito["tipo"] == "serie": 
+            url = "https://api.themoviedb.org/3/tv/"+favorito["filme_id"]
+            resposta = requests.get(url, params=params)
+            favoritos_json["serie"].append(resposta.json())
 
     return jsonify(favoritos_json),200
 

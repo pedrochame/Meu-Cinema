@@ -32,4 +32,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     }else{
         redireciona(caminho_tela_login);
     }
+    exibirPagina();
 });

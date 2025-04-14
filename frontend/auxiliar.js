@@ -37,6 +37,12 @@ function redireciona(caminho){
     window.location = caminho;
 }
 
+// Função que esconde a DIV de carregamento e exibe o corpo da página
+function exibirPagina(){
+    document.querySelector("#divConteudo").style.display = "block";
+    document.querySelector("#divLoading").style.display = "none";
+}
+
 // Variáveis para armazenar as rotas do back-end
 let dominio = "http://127.0.0.1:5000";
 let rota_login = dominio + "/login";

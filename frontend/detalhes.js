@@ -9,6 +9,7 @@ let genero = document.querySelector("#genero");
 let data = document.querySelector("#data");
 let duracao = document.querySelector("#duracao");
 let btFavorito = document.querySelector("#btFavorito");
+let ehFavorito = false;
 
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
@@ -22,13 +23,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         await configBtFavorito();
         configPagina(dados);
     }
+    exibirPagina();
 });
 
 
 btFavorito.addEventListener("click", async () => {
 
 
-    if(btFavorito.value == "Favoritar"){
+    if(ehFavorito == false){
         let response = await fetch(rota_favoritos,{
             method:"POST",
             credentials:"include",
@@ -38,16 +40,14 @@ btFavorito.addEventListener("click", async () => {
                 "tipo" : tipo,
             })
         });
-    }else if(btFavorito.value == "Desfavoritar"){
+    }else{
         let response = await fetch(rota_favoritos+"/"+id+"?tipo="+tipo,{
             method:"DELETE",
             credentials:"include",
         });
     }
 
-    
     await configBtFavorito();
-
 
 });
 
@@ -69,10 +69,14 @@ async function configBtFavorito(){
             let dados = await response.json();
             if(dados["favorito"]){
                 console.log("o item é favorito do usuário");
-                btFavorito.value = "Desfavoritar";
+                btFavorito.value = "Remover dos favoritos";
+                btFavorito.className += "btn-danger";
+                ehFavorito = true;
             }else{
                 console.log("o item NÃO É favorito do usuário");
-                btFavorito.value = "Favoritar";
+                btFavorito.value = "Adicionar aos favoritos";
+                btFavorito.className += "btn-success";
+                ehFavorito = false;
             }
         break;
         
@@ -109,7 +113,13 @@ function configPagina(dados){
     }
     
     
-    capa.src = caminho_tmdb_imagem+dados["poster_path"];
+    
+    // Se não houver imagem, é colocada uma capa padrão
+    if(dados["poster_path"] == null){
+        capa.src = "assets/sem_capa.png";
+    }else{
+        capa.src = caminho_tmdb_imagem+dados["poster_path"];
+    }
     sinopse.textContent = dados["overview"];
 
     for(let i = 0; i < dados["genres"].length ; i++){
@@ -124,7 +134,9 @@ function configPagina(dados){
     document.title += " "+titulo.textContent;
 
     // Completando informação de duração do filme/série
-    duracao.textContent = "[" + duracao.textContent + " min]";
+    if(duracao.textContent!=""){
+        duracao.textContent = "[" + duracao.textContent + " min]";
+    }
 
     // Completando informação de data do filme/série
     data.textContent = "(" + data.textContent + ")";
