@@ -1,3 +1,30 @@
+// Função que recebe uma lista de dicionários e a devolve ordenada de acordo com um parâmetro
+function ordenaDicionario(lista, param){
+    let l = [];
+    let aux;
+    while(lista.length>0){
+        for(let i = 1; i < lista.length; i++){
+            if(lista[i][param] > lista[i-1][param]){
+                aux = lista[i];
+                lista[i] = lista[i-1];
+                lista[i-1] = aux;
+            }
+        }
+        l.push(lista.pop());
+    }
+    return l;
+}
+
+// Função que recebe uma lista e um elemento, e verifica se esse elemento está na lista
+function buscaElemento(lista, elemento){
+    lista.forEach(element => {
+        if(element == elemento){
+            return true;
+        }
+    });
+    return false;
+}
+
 // Função que recebe uma string de data no formato yyyy-mm-dd e retorna no formato dd-mm-yyyy
 function converteData(data){
     if(data == ""){
@@ -37,6 +64,11 @@ function redireciona(caminho){
     window.location = caminho;
 }
 
+// Função que troca a mensagem da DIV de carregamento para mensagem de erro
+function configuraErro(){
+    document.querySelector("#divLoading").value = "Erro ao carregar conteúdo";
+}
+
 // Função que esconde a DIV de carregamento e exibe o corpo da página
 function exibirPagina(){
     document.querySelector("#divConteudo").style.display = "block";
@@ -51,10 +83,14 @@ let rota_logout = dominio + "/logout";
 let rota_usuario = dominio + "/usuario";
 let rota_filmes = dominio + "/filmes";
 let rota_series = dominio + "/series";
-let rota_series_busca = dominio + "/series_busca?termoBusca=";
-let rota_filmes_busca = dominio + "/filmes_busca?termoBusca=";
+//let rota_series_busca = dominio + "/series_busca?termoBusca=";
+let rota_series_busca = dominio + "/series_busca?termoBusca={termoBusca}&generoBusca={generoBusca}";
+//let rota_filmes_busca = dominio + "/filmes_busca?termoBusca=";
+let rota_filmes_busca = dominio + "/filmes_busca?termoBusca={termoBusca}&generoBusca={generoBusca}";
 let rota_filme = dominio + "/filmes/";
 let rota_serie = dominio + "/series/";
+let rota_serie_generos = dominio + "/series_generos";
+let rota_filme_generos = dominio + "/filmes_generos";
 let rota_favoritos = dominio + "/favoritos";
 
 // Variáveis para armazenar os caminhos para as telas
@@ -62,6 +98,7 @@ let caminho_tela_login = "login.html";
 let caminho_tela_cadastro = "cadastro.html";
 let caminho_tela_perfil = "perfil.html";
 let caminho_tela_index = "index.html";
+let caminho_tela_erro = "erro.html";
 
 // Variáveis de imagens da API TMDB
 let caminho_tmdb_imagem = "https://image.tmdb.org/t/p/w300";

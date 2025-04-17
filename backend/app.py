@@ -80,6 +80,38 @@ def usuario():
     nome = usuarioController.retornaUsuarioNome(current_user.id)
     return jsonify({"ID": current_user.id,"Nome": nome}),200
 
+# Rota para retornar gêneros de filmes (requisitando API TMDB)
+@app.route("/filmes_generos",methods=["GET"])
+@login_required
+def filmes_generos():
+    url = "https://api.themoviedb.org/3/genre/movie/list"
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+    }
+
+    resposta = requests.get(url, params=params)
+    status = 200
+    if resposta.status_code != 200: status = 400
+
+    return jsonify(resposta.json()), status
+
+# Rota para retornar gêneros de séries (requisitando API TMDB)
+@app.route("/series_generos",methods=["GET"])
+@login_required
+def series_generos():
+    url = "https://api.themoviedb.org/3/genre/tv/list"
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+    }
+
+    resposta = requests.get(url, params=params)
+    status = 200
+    if resposta.status_code != 200: status = 400
+
+    return jsonify(resposta.json()), status
+
 # Rota para retornar filmes mais bem avaliados (requisitando API TMDB)
 @app.route("/filmes",methods=["GET"])
 @login_required
@@ -88,13 +120,16 @@ def filmes():
     params = {
         "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
-        "page": 1
+        "page": 1,
     }
 
     resposta = requests.get(url, params=params)
-    return resposta.json()
+    status = 200
+    if resposta.status_code != 200: status = 400
 
-# Rota para retornar programas de tv mais bem avaliados (requisitando API TMDB)
+    return resposta.json(), status
+
+# Rota para retornar séries mais bem avaliadas (requisitando API TMDB)
 @app.route("/series",methods=["GET"])
 @login_required
 def series():
@@ -102,43 +137,80 @@ def series():
     params = {
         "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
-        "page": 1
+        "page": 1,
     }
 
     resposta = requests.get(url, params=params)
-    return resposta.json()
+    status = 200
+    if resposta.status_code != 200: status = 400
+    
+    return jsonify(resposta.json()), status
 
 # Rota para retornar filmes buscados (requisitando API TMDB)
 @app.route("/filmes_busca",methods=["GET"])
 @login_required
 def filmes_busca():
 
-    url = "https://api.themoviedb.org/3/search/movie"
-    params = {
-        "api_key": os.getenv("CHAVE_API_TMDB"),
-        "language": "pt-BR",
-        "page": 1,
-        "query": request.args.get("termoBusca"),
-    }
+    if request.args.get("termoBusca") == "":
+    
+        # Se não houver termo de busca, a url é a de discover usando o parâmetro with_genres
+        url = "https://api.themoviedb.org/3/discover/movie"
+        params = {
+            "api_key": os.getenv("CHAVE_API_TMDB"),
+            "language": "pt-BR",
+            "page": 1,
+            "with_genres": request.args.get("generoBusca"),
+        }
+    
+    else:
+
+        # Se houver termo de busca, a url é a de search usando o parâmetro query
+        url = "https://api.themoviedb.org/3/search/movie"
+        params = {
+            "api_key": os.getenv("CHAVE_API_TMDB"),
+            "language": "pt-BR",
+            "page": 1,
+            "query": request.args.get("termoBusca"),
+        }
 
     resposta = requests.get(url, params=params)
-    return resposta.json()
+    status = 200
+    if resposta.status_code != 200: status = 400
+    
+    return jsonify(resposta.json()), status
 
-# Rota para retornar programas de tv buscados (requisitando API TMDB)
+# Rota para retornar séries buscadas (requisitando API TMDB)
 @app.route("/series_busca",methods=["GET"])
 @login_required
 def series_busca():
 
-    url = "https://api.themoviedb.org/3/search/tv"
-    params = {
-        "api_key": os.getenv("CHAVE_API_TMDB"),
-        "language": "pt-BR",
-        "page": 1,
-        "query": request.args.get("termoBusca"),
-    }
+    if request.args.get("termoBusca") == "":
+    
+        # Se não houver termo de busca, a url é a de discover usando o parâmetro with_genres
+        url = "https://api.themoviedb.org/3/discover/tv"
+        params = {
+            "api_key": os.getenv("CHAVE_API_TMDB"),
+            "language": "pt-BR",
+            "page": 1,
+            "with_genres": request.args.get("generoBusca"),
+        }
+    
+    else:
+
+        # Se houver termo de busca, a url é a de search usando o parâmetro query
+        url = "https://api.themoviedb.org/3/search/tv"
+        params = {
+            "api_key": os.getenv("CHAVE_API_TMDB"),
+            "language": "pt-BR",
+            "page": 1,
+            "query": request.args.get("termoBusca"),
+        }
 
     resposta = requests.get(url, params=params)
-    return resposta.json()
+    status = 200
+    if resposta.status_code != 200: status = 400
+    
+    return jsonify(resposta.json()), status
 
 # Rota para retornar um filme específico (requisitando API TMDB)
 @app.route("/filmes/<string:id>",methods=["GET"])
@@ -161,9 +233,9 @@ def getFilme(id):
     except:
         status = 200
     
-    return resposta.json(),status
+    return jsonify(resposta.json()),status
 
-# Rota para retornar um programa de tv específico (requisitando API TMDB)
+# Rota para retornar uma série específica (requisitando API TMDB)
 @app.route("/series/<string:id>",methods=["GET"])
 @login_required
 def getSerie(id):
@@ -183,7 +255,7 @@ def getSerie(id):
     except:
         status = 200
     
-    return resposta.json(),status
+    return jsonify(resposta.json()),status
 
 # Rota para registrar um filme/série como favorito do usuário
 @app.route("/favoritos",methods=["POST"])
@@ -254,19 +326,20 @@ def buscaFavoritos():
         if favorito["tipo"] == "filme": 
             url = "https://api.themoviedb.org/3/movie/"+favorito["filme_id"]
             resposta = requests.get(url, params=params)
+
+            if resposta.status_code != 200: return jsonify(resposta.json()),400
+
             favoritos_json["filme"].append(resposta.json())
             
         if favorito["tipo"] == "serie": 
             url = "https://api.themoviedb.org/3/tv/"+favorito["filme_id"]
             resposta = requests.get(url, params=params)
+
+            if resposta.status_code != 200: return jsonify(resposta.json()),400
+
             favoritos_json["serie"].append(resposta.json())
 
     return jsonify(favoritos_json),200
-
-
-
-
-
 
 # Personalizando resposta para usuário não autorizado
 @login_manager.unauthorized_handler

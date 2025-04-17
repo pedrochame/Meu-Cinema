@@ -81,7 +81,7 @@ async function configBtFavorito(){
         break;
         
         default:
-            redireciona(caminho_tela_index);
+            redireciona(caminho_tela_erro);
         break;
     
     }
@@ -172,7 +172,7 @@ async function buscaFilmeSerie(id){
             return dados;
 
         default:
-            redireciona(caminho_tela_index);
+            redireciona(caminho_tela_erro);
         break;
     
     }

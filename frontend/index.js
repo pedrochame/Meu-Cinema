@@ -2,6 +2,7 @@
 let painelFilmes = document.querySelector("#painel-filmes");
 let painelSeries = document.querySelector("#painel-series");
 let campoBusca = document.querySelector("#campoBusca");
+let campoGenero = document.querySelector("#campoGenero");
 let btBuscar = document.querySelector("#btBuscar");
 let btFavoritos = document.querySelector("#btFavoritos");
 
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }else{
         await filmes();
         await series();
+        await generos();
     }
     exibirPagina();
 });
@@ -26,24 +28,31 @@ btFavoritos.addEventListener("click", async () => {
 
 // Quando o botão de busca é clicado, chamamos a função que se comunicará com o back-end na rota de pesquisa.
 btBuscar.addEventListener("click", async () => {
-    await busca();
+
+    let termoBusca = campoBusca.value.trim();
+    let generoBusca = campoGenero.value;
+
+    // Se o gênero for QUALQUER(valor 0) e não houver termo de busca, fazemos a busca padrão de filmes/séries
+    if(generoBusca == "0" && termoBusca == ""){
+        await filmes();
+        await series();
+    }else{
+        await busca(termoBusca,generoBusca);
+    }
+
 });
 
-// Função de pesquisa faz duas requisições ao back-end, na rota de pesquisa de filmes e na rota de pesquisa de séries.
-// Depois, chamamos a função que irá configurar os painéis estabelecidos na página, criando as DIVs que representarão cada um dos filmes/séries para serem exibidos na tela.
-async function busca(){
 
-    let termoBusca = campoBusca.value;
+// Função que faz duas requisições ao back-end, na rota de gêneros de filmes e na rota de gêneros de séries.
+// Depois, chamamos a função que irá configurar o campo de seleção de gênero para a busca.
+async function generos(){
 
-    painelFilmes.innerHTML = "";
-    painelSeries.innerHTML = "";
-
-    let responseFilmes = await fetch(rota_filmes_busca+termoBusca,{
+    let responseFilmes = await fetch(rota_filme_generos,{
         method:"GET",
         credentials:"include",
     });
 
-    let responseSeries = await fetch(rota_series_busca+termoBusca,{
+    let responseSeries = await fetch(rota_serie_generos,{
         method:"GET",
         credentials:"include",
     });
@@ -53,10 +62,67 @@ async function busca(){
     }
 
     let dadosFilmes = await responseFilmes.json();
-    configuraPainel(true,dadosFilmes["results"]);  
-
     let dadosSeries = await responseSeries.json();
-    configuraPainel(false,dadosSeries["results"]);
+    
+    configuraCampoGenero(dadosFilmes,dadosSeries);
+
+}
+
+// Função de pesquisa faz duas requisições ao back-end, na rota de pesquisa de filmes e na rota de pesquisa de séries.
+// Depois, chamamos a função que irá configurar os painéis estabelecidos na página, criando as DIVs que representarão cada um dos filmes/séries para serem exibidos na tela.
+async function busca(termoBusca,generoBusca){
+
+    let responseFilmes = await fetch(rota_filmes_busca.replace("{generoBusca}",generoBusca).replace("{termoBusca}",termoBusca),{
+        method:"GET",
+        credentials:"include",
+    });
+
+    let responseSeries = await fetch(rota_series_busca.replace("{generoBusca}",generoBusca).replace("{termoBusca}",termoBusca),{
+        method:"GET",
+        credentials:"include",
+    });
+
+    // Se uma das respostas tiver status 401 (não autorizado), redirecionamos o usuário para a tela de login
+    if(responseSeries.status == 401 || responseFilmes.status == 401){
+        redireciona(caminho_tela_login);
+    }
+
+    // Se uma das respostas tiver status diferente de 200 (que é o sucesso), redirecionamos o usuário para a tela de erro
+    if(responseSeries.status != 200 || responseFilmes.status != 200){
+        redireciona(caminho_tela_erro);
+    }
+
+    let dadosFilmes = await responseFilmes.json();
+    let dadosSeries = await responseSeries.json();
+    
+    let filmes = dadosFilmes["results"];
+    let series = dadosSeries["results"];
+
+    // Se houver termo de busca e gênero de busca, filtra-se os filmes/séries com somente os do gênero selecionado
+    if(termoBusca != "" && generoBusca != ""){
+
+        filmes = [];
+
+        dadosFilmes["results"].forEach(filme => {
+            
+            if(filme["genre_ids"].includes(parseInt(generoBusca))){
+                filmes.push(filme);
+            }
+        
+        });
+
+        series = [];
+        
+        dadosSeries["results"].forEach(serie => {
+            if(serie["genre_ids"].includes(parseInt(generoBusca))){
+                series.push(serie);
+            }
+        });
+
+    }
+
+    configuraPainel(true,filmes);  
+    configuraPainel(false,series);
 
 }
 
@@ -77,6 +143,10 @@ async function series(){
         case 200:
             let dados = await response.json();
             configuraPainel(false,dados["results"]);
+        break;
+        
+        default:
+            redireciona(caminho_tela_erro);
         break;
     }
 
@@ -99,6 +169,10 @@ async function filmes(){
             let dados = await response.json();
             configuraPainel(true,dados["results"]);
         break;
+
+        default:
+            redireciona(caminho_tela_erro);
+        break;
     }
 
 }
@@ -109,7 +183,7 @@ function configuraDiv(tipoFilme,filme){
     let filmeDiv = document.createElement("div");
     filmeDiv.className = "filme-div p-3 container m-3";
     filmeDiv.innerHTML = "<div class='d-flex justify-content-center'><b>{titulo}</b></div>";
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img src='{imagem}' class='img-fluid'></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img {imagem} class='img-fluid'></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>{data_label}:</b><p>{data}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>Nota Média do IMDB: </b><p>{nota}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><a href='detalhes.html?tipo={tipo}&id={id}'  class='btn btn-primary'>Detalhes</a></div>";
@@ -128,7 +202,7 @@ function configuraDiv(tipoFilme,filme){
         .replace("{id}",filme["id"])
         .replace("{tipo}","filme")
         .replace("{titulo}",filme["title"])
-        .replace("{imagem}",caminho_imagem)
+        .replace("{imagem}","src='"+caminho_imagem+"'")
         .replace("{data_label}","Data de Lançamento")
         .replace("{data}",converteData(filme["release_date"]))
         .replace("{nota}",filme["vote_average"]);
@@ -138,7 +212,7 @@ function configuraDiv(tipoFilme,filme){
         .replace("{id}",filme["id"])
         .replace("{tipo}","serie")
         .replace("{titulo}",filme["name"])
-        .replace("{imagem}",caminho_imagem)
+        .replace("{imagem}","src='"+caminho_imagem+"'")
         .replace("{data_label}","Data de Estreia")
         .replace("{data}",converteData(filme["first_air_date"]))
         .replace("{nota}",filme["vote_average"]);
@@ -149,7 +223,45 @@ function configuraDiv(tipoFilme,filme){
 
 // Função que recebe um json de filmes/séries, e chama a função que configura uma DIV para cada um deles
 function configuraPainel(tipoFilme, filmes){
+
+    if(tipoFilme){
+        painelFilmes.innerHTML = "";
+    }else{
+        painelSeries.innerHTML = "";
+    }
+
     filmes.forEach(filme => {
         configuraDiv(tipoFilme,filme);
     });
+}
+
+// Função que recebe um json de gêneros de filmes e um json de gêneros de séries, e adiciona os valores como opções no campo de gênero para busca 
+function configuraCampoGenero(generosFilmes, generosSeries){
+
+
+    let lista = [];
+
+    // Todos os gêneros de filmes são colocados na lista que alimentará o elemento select da página
+    generosFilmes["genres"].forEach(genero => {
+        lista.push(genero);
+    });
+
+    // Somente os gêneros exclusivos de séries são incluídos na lista 
+    generosSeries["genres"].forEach(genero => {
+        if(!lista.some(x => x["id"] == genero["id"])){
+            lista.push(genero);
+        }
+    });
+
+    // Ordenando lista de gêneros
+    lista = ordenaDicionario(lista,"name");
+    
+    // Para cada gênero da lista, adicionamos uma opção no elemento select da página
+    lista.forEach(genero => {
+        let op = document.createElement("option");
+        op.label = genero["name"];
+        op.value = genero["id"];
+        campoGenero.appendChild(op);
+    });
+
 }
