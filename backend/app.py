@@ -1,3 +1,10 @@
+################################### 18.04.25 #####################################################
+# Tratar com atenção mais tarde a questão das respostas das rotas em diferentes casos de insucesso
+##################################################################################################
+
+# Importando arquivo com funções e constantes auxiliares
+import auxiliar
+
 # Importanto bibliotecas necessárias
 import os
 import requests
@@ -80,6 +87,39 @@ def usuario():
     nome = usuarioController.retornaUsuarioNome(current_user.id)
     return jsonify({"ID": current_user.id,"Nome": nome}),200
 
+
+
+# Rota para retornar países (requisitando API TMDB)
+@app.route("/paises",methods=["GET"])
+@login_required
+def paises():
+    url = "https://api.themoviedb.org/3/configuration/countries"
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+    }
+
+    resposta = requests.get(url, params=params)
+    
+    if resposta.status_code != 200:
+
+        paises = auxiliar.retornaPaises()
+
+    else:
+
+        resposta_json = resposta.json()
+        paises = []
+        for i in resposta_json:
+            if i["iso_3166_1"] in ["US","FR","GB","JP","IN","BR","CN","KR","MX","ES"]:
+                paises.append({"label":i["native_name"],"value":i["iso_3166_1"]})
+
+
+    # Ordenando dicionário de países pelo nome (campo 'label')
+    paises = auxiliar.ordenaDic(paises,"label")
+
+    return jsonify(paises), 200
+
+
 # Rota para retornar gêneros de filmes (requisitando API TMDB)
 @app.route("/filmes_generos",methods=["GET"])
 @login_required
@@ -89,12 +129,13 @@ def filmes_generos():
         "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
     }
-
     resposta = requests.get(url, params=params)
-    status = 200
-    if resposta.status_code != 200: status = 400
+    if resposta.status_code != 200:
+        generos = auxiliar.GENEROS_FILME
+    else:
+        generos = resposta.json()["genres"]
 
-    return jsonify(resposta.json()), status
+    return jsonify(generos), 200
 
 # Rota para retornar gêneros de séries (requisitando API TMDB)
 @app.route("/series_generos",methods=["GET"])
@@ -105,17 +146,19 @@ def series_generos():
         "api_key": os.getenv("CHAVE_API_TMDB"),
         "language": "pt-BR",
     }
-
     resposta = requests.get(url, params=params)
-    status = 200
-    if resposta.status_code != 200: status = 400
+    if resposta.status_code != 200:
+        generos = auxiliar.GENEROS_SERIE
+    else:
+        generos = resposta.json()["genres"]
 
-    return jsonify(resposta.json()), status
+    return jsonify(generos), 200
 
 # Rota para retornar filmes mais bem avaliados (requisitando API TMDB)
 @app.route("/filmes",methods=["GET"])
 @login_required
 def filmes():
+
     url = "https://api.themoviedb.org/3/movie/top_rated"
     params = {
         "api_key": os.getenv("CHAVE_API_TMDB"),
@@ -123,11 +166,10 @@ def filmes():
         "page": 1,
     }
 
-    resposta = requests.get(url, params=params)
-    status = 200
-    if resposta.status_code != 200: status = 400
+    resp = requests.get(url, params=params)
+    if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter filmes da API do TMDB."}),502
 
-    return resposta.json(), status
+    return jsonify(resp.json()["results"]), 200
 
 # Rota para retornar séries mais bem avaliadas (requisitando API TMDB)
 @app.route("/series",methods=["GET"])
@@ -140,77 +182,130 @@ def series():
         "page": 1,
     }
 
-    resposta = requests.get(url, params=params)
-    status = 200
-    if resposta.status_code != 200: status = 400
-    
-    return jsonify(resposta.json()), status
+
+    resp = requests.get(url, params=params)
+    if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter séries da API do TMDB."}),502
+
+    return jsonify(resp.json()["results"]), 200
+
 
 # Rota para retornar filmes buscados (requisitando API TMDB)
 @app.route("/filmes_busca",methods=["GET"])
 @login_required
 def filmes_busca():
 
-    if request.args.get("termoBusca") == "":
-    
-        # Se não houver termo de busca, a url é a de discover usando o parâmetro with_genres
+    if set(request.args.keys()) != set(["termoBusca","generoBusca","paisBusca"]):
+        return jsonify({"Mensagem":"Os campos devem ser somente termoBusca, generoBusca e paisBusca."}),400
+
+    generoBusca = request.args.get("generoBusca")
+    termoBusca = request.args.get("termoBusca")
+    paisBusca = request.args.get("paisBusca")
+
+    if termoBusca == "":
+
+        # Buscando filmes por gênero e país
         url = "https://api.themoviedb.org/3/discover/movie"
+
         params = {
             "api_key": os.getenv("CHAVE_API_TMDB"),
             "language": "pt-BR",
             "page": 1,
-            "with_genres": request.args.get("generoBusca"),
+            "with_genres" : generoBusca,
+            "with_origin_country" : paisBusca,
         }
     
+        resp = requests.get(url, params=params)
+        if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter filmes por gênero/país da API do TMDB."}),502
+        return jsonify(resp.json()["results"]),200
+
     else:
-
-        # Se houver termo de busca, a url é a de search usando o parâmetro query
+        
+        # Buscando filmes por termo
         url = "https://api.themoviedb.org/3/search/movie"
-        params = {
-            "api_key": os.getenv("CHAVE_API_TMDB"),
-            "language": "pt-BR",
-            "page": 1,
-            "query": request.args.get("termoBusca"),
-        }
 
-    resposta = requests.get(url, params=params)
-    status = 200
-    if resposta.status_code != 200: status = 400
-    
-    return jsonify(resposta.json()), status
+        params = {
+                "api_key": os.getenv("CHAVE_API_TMDB"),
+                "language": "pt-BR",
+                "page": 1,
+                "query" : termoBusca
+        }
+        resp = requests.get(url, params=params)
+        if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter filmes por nome da API do TMDB."}),502
+        
+        filmes = []
+        
+        for filme in resp.json()["results"]:
+
+            if paisBusca != "":
+                url = "https://api.themoviedb.org/3/movie/"
+        
+                params = {
+                    "api_key": os.getenv("CHAVE_API_TMDB"),
+                    "language": "pt-BR",
+                }
+
+                resp = requests.get(url+str(filme["id"]),params=params)
+                if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao buscar por país da API do TMDB."}),502
+                pais = resp.json()["origin_country"]
+            
+            if (generoBusca=="" and paisBusca=="") or (generoBusca != "" and paisBusca != "" and int(generoBusca) in filme["genre_ids"] and paisBusca in pais) or (paisBusca == "" and generoBusca != "" and int(generoBusca) in filme["genre_ids"]) or (generoBusca=="" and paisBusca != "" and paisBusca in pais):
+                    filmes.append(filme)
+        
+        
+        return jsonify(filmes),200
 
 # Rota para retornar séries buscadas (requisitando API TMDB)
 @app.route("/series_busca",methods=["GET"])
 @login_required
 def series_busca():
 
-    if request.args.get("termoBusca") == "":
-    
-        # Se não houver termo de busca, a url é a de discover usando o parâmetro with_genres
+    if set(request.args.keys()) != set(["termoBusca","generoBusca","paisBusca"]):
+        return jsonify({"Mensagem":"Os campos devem ser somente termoBusca, generoBusca e paisBusca."}),400
+
+    generoBusca = request.args.get("generoBusca")
+    termoBusca = request.args.get("termoBusca")
+    paisBusca = request.args.get("paisBusca")
+
+    if termoBusca == "":
+
+        # Buscando por série gênero e país
         url = "https://api.themoviedb.org/3/discover/tv"
+
         params = {
             "api_key": os.getenv("CHAVE_API_TMDB"),
             "language": "pt-BR",
             "page": 1,
-            "with_genres": request.args.get("generoBusca"),
+            "with_genres" : generoBusca,
+            "with_origin_country" : paisBusca,
         }
     
+        resp = requests.get(url, params=params)
+        if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter séries por gênero/país da API do TMDB."}),502
+        return jsonify(resp.json()["results"]),200
+
     else:
-
-        # Se houver termo de busca, a url é a de search usando o parâmetro query
+        
+        # Buscando séries por termo
         url = "https://api.themoviedb.org/3/search/tv"
-        params = {
-            "api_key": os.getenv("CHAVE_API_TMDB"),
-            "language": "pt-BR",
-            "page": 1,
-            "query": request.args.get("termoBusca"),
-        }
 
-    resposta = requests.get(url, params=params)
-    status = 200
-    if resposta.status_code != 200: status = 400
-    
-    return jsonify(resposta.json()), status
+        params = {
+                "api_key": os.getenv("CHAVE_API_TMDB"),
+                "language": "pt-BR",
+                "page": 1,
+                "query" : termoBusca
+        }
+        resp = requests.get(url, params=params)
+        if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter séries por nome da API do TMDB."}),502
+        
+        series = []
+        
+        for serie in resp.json()["results"]:
+            
+            if  (generoBusca=="" and paisBusca=="") or (generoBusca != "" and paisBusca != "" and int(generoBusca) in serie["genre_ids"] and paisBusca in serie["origin_country"]) or (paisBusca == "" and generoBusca != "" and int(generoBusca) in serie["genre_ids"]) or(generoBusca=="" and paisBusca != "" and paisBusca in serie["origin_country"]):
+                    series.append(serie)
+        
+        
+        return jsonify(series),200
 
 # Rota para retornar um filme específico (requisitando API TMDB)
 @app.route("/filmes/<string:id>",methods=["GET"])

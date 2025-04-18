@@ -1,19 +1,55 @@
 .filme-div{
     width: 250px;
     border: 2px solid black;
-    border-radius: 8px;
-}
-.filme-div b{
-    font-size: smaller;
-}
-.filme-div p{
-    font-size: smaller;
-}
-.filme-div img{
-    border-radius: 8px;
-    border: 1px solid black;
+    border-radius: 0px;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px 18px 8px purple;
+
+    p,b{
+        font-size: smaller ;
+        color: black ;
+    }
+
+    #divImg{
+        overflow: hidden;
+        border-radius: 256px;
+        border: 2px solid black;
+    }
+    
+    img:hover{
+        transform: scale(1.15);
+        transition: .4s ease-in-out;
+    }
 }
 
 #divConteudo{
     display: none;
+    color: black;
+}
+
+#divErro,#divLoading{
+    color: whitesmoke;
+}
+
+#divHeader{
+    a {
+        text-decoration: none;
+        color: whitesmoke;
+        font-weight: bold;
+    }
+}
+
+#painelDetalhes{
+    b{
+        color: black;
+    }
+    background-color: whitesmoke;
+}
+
+body{
+    background-image: url("assets/wallpaper.png");
+    background-repeat:repeat;
+    b{
+        color: whitesmoke;
+    }
 }

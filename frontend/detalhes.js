@@ -8,6 +8,8 @@ let sinopse = document.querySelector("#sinopse");
 let genero = document.querySelector("#genero");
 let data = document.querySelector("#data");
 let duracao = document.querySelector("#duracao");
+let temporadas = document.querySelector("#temporadas");
+let episodios = document.querySelector("#episodios");
 let btFavorito = document.querySelector("#btFavorito");
 let ehFavorito = false;
 
@@ -98,6 +100,8 @@ function configPagina(dados){
             titulo.textContent = dados["title"]; // Título
             data.textContent = getAno(dados["release_date"]); // Data de lançamento
             duracao.textContent = dados["runtime"]; // Duração
+            temporadas.style.display = "none"; // Temporadas(não há)
+            episodios.style.display = "none"; // Episódios(não há)
         break;
 
         // Informações de série
@@ -108,6 +112,8 @@ function configPagina(dados){
             if(dados["in_production"] == false){
                 data.textContent += getAno(dados["last_air_date"]); // Data de fim
             }
+            temporadas.innerHTML = "<b>Temporadas: </b>"+dados["number_of_seasons"] // Temporadas
+            episodios.innerHTML  = "<b>Episódios: </b>"+dados["number_of_episodes"] // Episódios
         break;
         
     }
@@ -140,7 +146,6 @@ function configPagina(dados){
 
     // Completando informação de data do filme/série
     data.textContent = "(" + data.textContent + ")";
-
 }
 
 // Função que faz requisição ao back-end na rota de filmes ou na rota de séries

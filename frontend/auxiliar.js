@@ -27,6 +27,7 @@ function buscaElemento(lista, elemento){
 
 // Função que recebe uma string de data no formato yyyy-mm-dd e retorna no formato dd-mm-yyyy
 function converteData(data){
+    
     if(data == ""){
         return data;
     }
@@ -69,10 +70,17 @@ function configuraErro(){
     document.querySelector("#divLoading").value = "Erro ao carregar conteúdo";
 }
 
-// Função que esconde a DIV de carregamento e exibe o corpo da página
+// Função que esconde a DIV de carregamento, exibe o corpo da página e adiciona o conteúdo do cabeçalho
 function exibirPagina(){
     document.querySelector("#divConteudo").style.display = "block";
     document.querySelector("#divLoading").style.display = "none";
+    document.querySelector("#divHeader").innerHTML = "<header><a href='perfil.html'>Perfil</a><a href='index.html'>Dashboard</a><a href='favoritos.html'>Favoritos</a></header>";
+}
+
+// Função que exibe a DIV de carregamento e esconde o corpo da página
+function esconderPagina(){
+    document.querySelector("#divConteudo").style.display = "none";
+    document.querySelector("#divLoading").style.display = "block";
 }
 
 // Variáveis para armazenar as rotas do back-end
@@ -83,15 +91,15 @@ let rota_logout = dominio + "/logout";
 let rota_usuario = dominio + "/usuario";
 let rota_filmes = dominio + "/filmes";
 let rota_series = dominio + "/series";
-//let rota_series_busca = dominio + "/series_busca?termoBusca=";
-let rota_series_busca = dominio + "/series_busca?termoBusca={termoBusca}&generoBusca={generoBusca}";
-//let rota_filmes_busca = dominio + "/filmes_busca?termoBusca=";
-let rota_filmes_busca = dominio + "/filmes_busca?termoBusca={termoBusca}&generoBusca={generoBusca}";
+let camposBusca = "paisBusca={paisBusca}&termoBusca={termoBusca}&generoBusca={generoBusca}";
+let rota_series_busca = dominio + "/series_busca?"+camposBusca;
+let rota_filmes_busca = dominio + "/filmes_busca?"+camposBusca;
 let rota_filme = dominio + "/filmes/";
 let rota_serie = dominio + "/series/";
 let rota_serie_generos = dominio + "/series_generos";
 let rota_filme_generos = dominio + "/filmes_generos";
 let rota_favoritos = dominio + "/favoritos";
+let rota_paises = dominio + "/paises";
 
 // Variáveis para armazenar os caminhos para as telas
 let caminho_tela_login = "login.html";

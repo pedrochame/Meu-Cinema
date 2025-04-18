@@ -1,6 +1,7 @@
 // Variáveis da tela principal
 let painelFilmes = document.querySelector("#painel-filmes");
 let painelSeries = document.querySelector("#painel-series");
+let painelConteudo = document.querySelector("#painel-conteudo");
 
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
@@ -49,10 +50,11 @@ function configuraDiv(tipoFilme,filme){
     let filmeDiv = document.createElement("div");
     filmeDiv.className = "filme-div p-3 container m-3";
     filmeDiv.innerHTML = "<div class='d-flex justify-content-center'><b>{titulo}</b></div>";
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img {imagem} class='img-fluid'></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center' id='divImg'><a href='detalhes.html?tipo={tipo}&id={id}'><img {imagem} class='img-fluid'></a></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>{data_label}:</b><p>{data}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>Nota Média do IMDB: </b><p>{nota}</p></div>";
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><a href='detalhes.html?tipo={tipo}&id={id}'  class='btn btn-primary'>Detalhes</a></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><i>{tipoExibir}</i></div>";
+    //filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><a href='detalhes.html?tipo={tipo}&id={id}'  class='btn btn-primary'>Detalhes</a></div>";
 
 
 
@@ -67,22 +69,24 @@ function configuraDiv(tipoFilme,filme){
         filmeDiv.innerHTML = filmeDiv.innerHTML
         .replace("{id}",filme["id"])
         .replace("{tipo}","filme")
+        .replace("{tipoExibir}","Filme")
         .replace("{titulo}",filme["title"])
         .replace("{imagem}","src='"+caminho_imagem+"'")
         .replace("{data_label}","Data de Lançamento")
         .replace("{data}",converteData(filme["release_date"]))
         .replace("{nota}",filme["vote_average"]);
-        painelFilmes.appendChild(filmeDiv);
+        painelConteudo.appendChild(filmeDiv);
     }else{
         filmeDiv.innerHTML = filmeDiv.innerHTML
         .replace("{id}",filme["id"])
         .replace("{tipo}","serie")
+        .replace("{tipoExibir}","Série")
         .replace("{titulo}",filme["name"])
         .replace("{imagem}","src='"+caminho_imagem+"'")
         .replace("{data_label}","Data de Estreia")
         .replace("{data}",converteData(filme["first_air_date"]))
         .replace("{nota}",filme["vote_average"]);
-        painelSeries.appendChild(filmeDiv);
+        painelConteudo.appendChild(filmeDiv);
     }
 
 }
