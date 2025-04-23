@@ -7,7 +7,7 @@
 
     p,b{
         font-size: smaller ;
-        color: black ;
+        color: black !important;
     }
 
     #divImg{
@@ -20,11 +20,15 @@
         transform: scale(1.15);
         transition: .4s ease-in-out;
     }
+
 }
 
 #divConteudo{
     display: none;
     color: black;
+    b{
+        color: whitesmoke;
+    }
 }
 
 #divErro,#divLoading{
@@ -36,10 +40,18 @@
         text-decoration: none;
         color: whitesmoke;
         font-weight: bold;
+        font-size: large;
+    }
+    
+    a:hover{
+        color: yellow;
+    }
+    img{
+        height: 100px;
     }
 }
 
-#painelDetalhes{
+#painelDetalhes,#painelPerfil{
     b{
         color: black;
     }
@@ -49,7 +61,4 @@
 body{
     background-image: url("assets/wallpaper.png");
     background-repeat:repeat;
-    b{
-        color: whitesmoke;
-    }
 }
