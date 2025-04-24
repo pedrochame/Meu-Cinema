@@ -22,6 +22,7 @@ async function login(nomeUsuario,senhaUsuario){
     }else{
         // Se não, a mensagem retornada pelo Back-End será exibida na tela
         let dados = await response.json();
+        
         info.textContent = dados["Mensagem"];
     }
 
@@ -49,6 +50,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Quando algum campo for focado, a mensagem de informação deixa de ser exibida
 document.querySelectorAll(".campo").forEach(e => {
     e.addEventListener("focus", ()=>{
-        info.textContent = "";
+        info.textContent="";
     });
 });

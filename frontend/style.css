@@ -62,3 +62,7 @@ body{
     background-image: url("assets/wallpaper.png");
     background-repeat:repeat;
 }
+
+.btn{
+    font-weight: bold;
+}
