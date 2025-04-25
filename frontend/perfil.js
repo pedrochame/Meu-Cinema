@@ -1,6 +1,7 @@
 // Variáveis da página de perfil
 let nomeUsuario = document.querySelector("#nomeUsuario");
 let idUsuario = document.querySelector("#idUsuario");
+let favoritosUsuario = document.querySelector("#favoritosUsuario");
 let btLogout = document.querySelector("#btLogout");
 
 // Função que faz requisição ao Back-End, na rota de deslogar usuário
@@ -32,5 +33,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     }else{
         redireciona(caminho_tela_login);
     }
+    await favoritos();
     exibirPagina();
 });
+
+// Função que faz requsição ao back-end na rota de favoritos
+async function favoritos(){
+
+    let response = await fetch(rota_favoritos,{
+        method:"GET",
+        credentials:"include"
+    });
+
+    switch(response.status){
+        case 401:
+            redireciona(caminho_tela_login);
+        break;
+        
+        case 200:
+            let dados = await response.json();
+            favoritosUsuario.textContent = dados["filme"].length + " filme(s) & " + dados["serie"].length + " série(s)";
+        break;
+
+        default:
+            redireciona(caminho_tela_erro);
+        break;
+
+    }
+
+}

@@ -74,7 +74,16 @@ function configuraErro(){
 function exibirPagina(){
     document.querySelector("#divConteudo").style.display = "block";
     document.querySelector("#divLoading").style.display = "none";
-    document.querySelector("#divHeader").innerHTML = "<header>    <div class='d-flex flex-wrap justify-content-center mb-4'><img class='img-fluid mt-4' src='assets/logo.png'></div><div class='d-flex flex-wrap justify-content-center gap-5'><div><a href='cadastro.html'>Cadastro</a></div><div><a href='login.html'>Entrar</a></div><div><a href='perfil.html'>Perfil</a></div><div><a href='index.html'>Dashboard</a></div><div><a href='favoritos.html'>Favoritos</a></div></div></header>";
+
+    // Se a página atual for Login ou Cadastro, apenas essas opções aparecem no cabeçalho (usuário deslogado)
+    // Se a página atual for Dashboard, Favoritos ou Perfil, apenas essas opções aparecem (usuário logado)
+    let paginaAtual = window.location.pathname.split("/")[(window.location.pathname.split("/").length-1)];
+    if(paginaAtual == "login.html" || paginaAtual ==  "cadastro.html"){
+        document.querySelector("#divHeader").innerHTML = "<header><div class='d-flex flex-wrap justify-content-center mb-4'><img class='img-fluid mt-4' src='assets/logo.png'></div><div class='d-flex flex-wrap justify-content-center gap-5'><div><a href='cadastro.html'>Cadastro</a></div><div><a href='login.html'>Entrar</a></div></div></header>";
+    }else{
+        document.querySelector("#divHeader").innerHTML = "<header><div class='d-flex flex-wrap justify-content-center mb-4'><img class='img-fluid mt-4' src='assets/logo.png'></div><div class='d-flex flex-wrap justify-content-center gap-5'><div><a href='perfil.html'>Perfil</a></div><div><a href='index.html'>Dashboard</a></div><div><a href='favoritos.html'>Favoritos</a></div></div></header>";
+    }
+
 }
 
 // Função que exibe a DIV de carregamento e esconde o corpo da página
