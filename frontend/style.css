@@ -55,7 +55,11 @@
     b{
         color: black;
     }
-    background-color: whitesmoke;
+    #capa{
+        border-radius: 8px;
+        border: 2px solid black;
+    }
+
 }
 
 body{

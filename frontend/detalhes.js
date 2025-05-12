@@ -12,6 +12,7 @@ let temporadas = document.querySelector("#temporadas");
 let episodios = document.querySelector("#episodios");
 let btFavorito = document.querySelector("#btFavorito");
 let ehFavorito = false;
+let painelDetalhes = document.querySelector("#painelDetalhes");
 
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
@@ -120,14 +121,20 @@ function configPagina(dados){
     
     
     
-    // Se não houver imagem, é colocada uma capa padrão
+    // Capa (se não houver, é colocada uma imagem padrão)
     if(dados["poster_path"] == null){
         capa.src = "assets/sem_capa.png";
     }else{
         capa.src = caminho_tmdb_imagem+dados["poster_path"];
     }
+
+    // Imagem de fundo
+    painelDetalhes.style.backgroundImage = "url('"+caminho_tmdb_imagem+dados['backdrop_path']+"')";
+
+    // Sinopse
     sinopse.textContent = dados["overview"];
 
+    // Gênero
     for(let i = 0; i < dados["genres"].length ; i++){
         genero.textContent += dados["genres"][i]["name"];
         if ( i != dados["genres"].length - 1){
