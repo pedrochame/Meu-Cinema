@@ -119,3 +119,4 @@ let caminho_tela_erro = "erro.html";
 
 // Variáveis de imagens da API TMDB
 let caminho_tmdb_imagem = "https://image.tmdb.org/t/p/w300";
+let caminho_tmdb_imagem_wallpaper = "https://image.tmdb.org/t/p/w1280";

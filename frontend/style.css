@@ -29,6 +29,7 @@
     b{
         color: whitesmoke;
     }
+       
 }
 
 #divErro,#divLoading{
@@ -62,9 +63,24 @@
 
 }
 
+#fundoTelaDetalhes{
+    position:fixed;
+    opacity: 0.45;
+    z-index: -1;
+    width: 100vw;
+    height: 100vh;
+}
+
+
+
+
+
+
+
+
 body{
     background-image: url("assets/wallpaper.png");
-    background-repeat:repeat;
+    background-repeat: repeat;
 }
 
 .btn{

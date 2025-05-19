@@ -441,7 +441,6 @@ def buscaFavoritos():
 def unauthorized():
     return jsonify({"Mensagem": "Usuário não autenticado."}), 401
 
-
 # Executando aplicação
 if __name__ == "__main__":
     app.run(debug=True)

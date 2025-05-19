@@ -129,7 +129,10 @@ function configPagina(dados){
     }
 
     // Imagem de fundo
-    painelDetalhes.style.backgroundImage = "url('"+caminho_tmdb_imagem+dados['backdrop_path']+"')";
+    document.body.style.backgroundImage = "none";
+    document.body.style.backgroundColor = "rgba(255, 255, 255, 0)";
+    document.querySelector("#fundoTelaDetalhes").src = caminho_tmdb_imagem_wallpaper+dados['backdrop_path'];
+    document.querySelector("#fundoTelaDetalhes").style.display = "block";
 
     // Sinopse
     sinopse.textContent = dados["overview"];
