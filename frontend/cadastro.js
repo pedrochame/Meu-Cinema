@@ -51,5 +51,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location = "perfil.html";
     }
     exibirPagina();
-    adicionarCabecalho();
+    //adicionarCabecalho();
 });

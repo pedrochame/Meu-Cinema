@@ -55,17 +55,21 @@
 #painelDetalhes{
     b{
         color: black;
+        font-size:x-large;
     }
     #capa{
         border-radius: 8px;
         border: 2px solid black;
+    }
+    p,i{
+        font-weight: bold;
     }
 
 }
 
 #fundoTelaDetalhes{
     position:fixed;
-    opacity: 0.45;
+    opacity: 0.4;
     z-index: -1;
     width: 100vw;
     height: 100vh;

@@ -79,9 +79,14 @@ function exibirPagina(){
     // Se a página atual for Dashboard, Favoritos ou Perfil, apenas essas opções aparecem (usuário logado)
     let paginaAtual = window.location.pathname.split("/")[(window.location.pathname.split("/").length-1)];
     if(paginaAtual == "login.html" || paginaAtual ==  "cadastro.html"){
-        document.querySelector("#divHeader").innerHTML = "<header><div class='d-flex flex-wrap justify-content-center mb-4'><img class='img-fluid mt-4' src='assets/logo.png'></div><div class='d-flex flex-wrap justify-content-center gap-5'><div><a href='cadastro.html'>Cadastro</a></div><div><a href='login.html'>Entrar</a></div></div></header>";
+        document.querySelector("#divHeader").innerHTML = "<header><div class='bg-white d-flex flex-wrap justify-content-center mb-4'><img class='img-fluid mt-4' src='assets/logo.png'></div><div class='d-flex flex-wrap justify-content-center gap-5'><div><a href='cadastro.html'>Cadastro</a></div><div><a href='login.html'>Entrar</a></div></div></header>";
     }else{
-        document.querySelector("#divHeader").innerHTML = "<header><div class='d-flex flex-wrap justify-content-center mb-4'><img class='img-fluid mt-4' src='assets/logo.png'></div><div class='d-flex flex-wrap justify-content-center gap-5'><div><a href='perfil.html'>Perfil</a></div><div><a href='index.html'>Dashboard</a></div><div><a href='favoritos.html'>Favoritos</a></div></div></header>";
+        //document.querySelector("#divHeader").innerHTML = "<header><div class='d-flex flex-wrap justify-content-center mb-4'><img class='img-fluid mt-4' src='assets/logo.png'></div><div class='d-flex flex-wrap justify-content-center gap-5'><div><a href='perfil.html'>Perfil</a></div><div><a href='index.html'>Dashboard</a></div><div><a href='favoritos.html'>Favoritos</a></div></div></header>";
+
+        //document.querySelector("#divHeader").innerHTML = "<div class='bg-black'><div class='container'><div class='row'><div class='col-12 text-center'><img class='img-fluid mt-4' src='assets/logo.png'></div></div></div><div class='container'><div class='row'><div class='col-12 text-center'><div class='navbar justify-content-center'><a class='p-4' href='perfil.html'>PERFIL</a><a class='p-4' href='index.html'>PESQUISA</a><a class='p-4' href='favoritos.html'>FAVORITOS</a></div></div></div></div>";
+
+        document.querySelector("#divHeader").innerHTML = "<div class='p-4 bg-black'><div class='navbar'><img class='img-fluid' src='assets/logo.png'><a href='perfil.html'>PERFIL</a><a href='index.html'>PESQUISA</a><a href='favoritos.html'>FAVORITOS</a></div></div>";
+        
     }
 
 }

@@ -3,3 +3,4 @@ backend/controller/__pycache__/
 backend/dao/__pycache__/
 backend/.env
 frontend/teste.html
+backend/__pycache__
