@@ -79,12 +79,16 @@ function exibirPagina(){
     // Se a página atual for Dashboard, Favoritos ou Perfil, apenas essas opções aparecem (usuário logado)
     let paginaAtual = window.location.pathname.split("/")[(window.location.pathname.split("/").length-1)];
     if(paginaAtual == "login.html" || paginaAtual ==  "cadastro.html"){
-                document.querySelector("#divHeader").innerHTML = "<div class='p-4 bg-black'><div class='navbar'><img class='img-fluid' src='assets/logo.png'><a href='login.html'>LOGIN</a><a href='cadastro.html'>CADASTRO</a></div></div>";
+                document.querySelector("#divHeader").innerHTML = "<div class='p-4'><div class='navbar'><img class='img-fluid' src='assets/logo.png'><a href='login.html'>LOGIN</a><a href='cadastro.html'>CADASTRO</a></div></div>";
     }else{
 
-        document.querySelector("#divHeader").innerHTML = "<div class='p-4 bg-black'><div class='navbar'><img class='img-fluid' src='assets/logo.png'><a href='perfil.html'>PERFIL</a><a href='index.html'>PESQUISA</a><a href='favoritos.html'>FAVORITOS</a></div></div>";
+        document.querySelector("#divHeader").innerHTML = "<div class='p-4'><div class='navbar'><img class='img-fluid' src='assets/logo.png'><a href='perfil.html'>PERFIL</a><a href='index.html'>PESQUISA</a><a href='favoritos.html'>FAVORITOS</a></div></div>";
         
     }
+
+
+    // Adicionando rodapé
+    document.querySelector("#divFooter").innerHTML = "<div class='container'><div class='row'><div class='col-12 text-center'><p>Desenvolvido por <b>Pedro Chame</b></p></div></div></div>";
 
 }
 
