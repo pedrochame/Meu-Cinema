@@ -7,6 +7,10 @@ let painelConteudo = document.querySelector("#painel-conteudo");
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos as funções que se comunicarão com o back-end buscando filmes/séries e criando os elementos para que sejam exibidos na tela.
 document.addEventListener("DOMContentLoaded", async () => {
+
+    esconderPagina();
+
+
     let usuario = await buscaUsuario();
     if(usuario == null){
         redireciona(caminho_tela_login);
@@ -37,7 +41,7 @@ async function favoritos(){
         break;
 
         default:
-            redireciona(caminho_tela_erro);
+            exibirErro();
         break;
 
     }

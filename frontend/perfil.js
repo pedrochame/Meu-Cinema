@@ -26,6 +26,7 @@ btLogout.addEventListener("click", async ()=>{
 // Assim que a página estiver pronta, é verificado se o usuário está logado.
 // Se estiver, seus dados são exibidos na página. Se não, redirecionamos para a tela de login.
 document.addEventListener("DOMContentLoaded", async () => {
+    esconderPagina();
     let usuario = await buscaUsuario();
     if(usuario != null){
         nomeUsuario.textContent = usuario["Nome"];
@@ -56,7 +57,7 @@ async function favoritos(){
         break;
 
         default:
-            redireciona(caminho_tela_erro);
+            exibirErro();
         break;
 
     }

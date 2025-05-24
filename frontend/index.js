@@ -10,6 +10,7 @@ let btBuscar = document.querySelector("#btBuscar");
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos as funções que se comunicarão com o back-end buscando filmes/séries e criando os elementos para que sejam exibidos na tela.
 document.addEventListener("DOMContentLoaded", async () => {
+    esconderPagina();
     let usuario = await buscaUsuario();
     if(usuario == null){
         redireciona(caminho_tela_login);
@@ -119,7 +120,7 @@ async function busca(termoBusca,generoBusca,paisBusca){
 
     // Se uma das respostas tiver status diferente de 200 (que é o sucesso), redirecionamos o usuário para a tela de erro
     if(responseSeries.status != 200 || responseFilmes.status != 200){
-        redireciona(caminho_tela_erro);
+        exibirErro();
     }
 
     let filmes = await responseFilmes.json();
@@ -151,7 +152,7 @@ async function series(){
         break;
         
         default:
-            redireciona(caminho_tela_erro);
+            exibirErro();
         break;
     }
 
@@ -177,7 +178,7 @@ async function filmes(){
         break;
 
         default:
-            redireciona(caminho_tela_erro);
+            exibirErro();
         break;
     }
 

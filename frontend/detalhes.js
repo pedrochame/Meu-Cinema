@@ -18,6 +18,7 @@ let painelDetalhes = document.querySelector("#painelDetalhes");
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos a função que se comunicará com o back-end buscando o determinado filme/série e a função que irá preencher os dados na tela com as informações obtidas.
 document.addEventListener("DOMContentLoaded", async () => {
+    esconderPagina();
     let usuario = await buscaUsuario();
     if(usuario == null){
         redireciona(caminho_tela_login);
@@ -84,7 +85,7 @@ async function configBtFavorito(){
         break;
         
         default:
-            redireciona(caminho_tela_erro);
+            exibirErro();
         break;
     
     }
@@ -187,7 +188,7 @@ async function buscaFilmeSerie(id){
             return dados;
 
         default:
-            redireciona(caminho_tela_erro);
+            exibirErro();
         break;
     
     }

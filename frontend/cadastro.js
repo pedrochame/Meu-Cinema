@@ -46,10 +46,10 @@ document.querySelectorAll(".campo").forEach(e => {
 // Assim que a página estiver pronta, é verificado se o usuário está logado.
 // Se estiver, redirecionamos para a tela de perfil.
 document.addEventListener("DOMContentLoaded", async () => {
+    esconderPagina();
     let usuario = await buscaUsuario();
     if(usuario != null){
         window.location = "perfil.html";
     }
     exibirPagina();
-    //adicionarCabecalho();
 });
