@@ -436,11 +436,173 @@ def buscaFavoritos():
 
     return jsonify(favoritos_json),200
 
+
+
+
+
+# Rota para buscar provedores de série (requisitando API TMDB)
+@app.route("/provedores_serie/<string:serie_id>",methods=["GET"])
+@login_required
+def provedores_serie(serie_id):
+
+    url = "https://api.themoviedb.org/3/tv/"+serie_id+"/watch/providers"
+    
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+    }
+
+    resposta = requests.get(url, params=params)
+
+    resultado = resposta.json()
+
+    # Se a resposta da API TMDB for que o id é invalido (status_code = 34), retornamos o status 404
+    try:
+        if resultado["status_code"] == 34:
+            return jsonify({"Mensagem": "ID de filme/série inválido."}), 404
+    except:
+        pass
+
+    # Gerando objeto json de resposta contendo os provedores apenas do Brasil
+    provedores = {"gratuito":[],"anuncios":[],"incluso":[],"comprar":[],"alugar":[]}
+    
+    if "BR" in resultado["results"]:
+        if "free" in resultado["results"]["BR"]:
+            for i in resultado["results"]["BR"]["free"]:
+
+                provedores["gratuito"].append({
+                    "img" :i["logo_path"],
+                    "nome":i["provider_name"],
+                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                    "provedor_id":i["provider_id"]
+                })
+                
+        if "ads" in resultado["results"]["BR"]:
+            for i in resultado["results"]["BR"]["ads"]:
+
+                provedores["anuncios"].append({
+                    "img" :i["logo_path"],
+                    "nome":i["provider_name"],
+                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                    "provedor_id":i["provider_id"]
+                })
+
+        if "flatrate" in resultado["results"]["BR"]:
+            for i in resultado["results"]["BR"]["flatrate"]:
+
+                provedores["incluso"].append({
+                    "img" :i["logo_path"],
+                    "nome":i["provider_name"],
+                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                    "provedor_id":i["provider_id"]
+                })
+
+        if "buy" in resultado["results"]["BR"]:
+
+            provedores["comprar"].append({
+                "img" :i["logo_path"],
+                "nome":i["provider_name"],
+                "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                "provedor_id":i["provider_id"]
+            })
+
+        if "rent" in resultado["results"]["BR"]:
+
+            provedores["alugar"].append({
+                "img" :i["logo_path"],
+                "nome":i["provider_name"],
+                "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                "provedor_id":i["provider_id"]
+            })
+
+    return jsonify(provedores),200
+
+
+# Rota para buscar provedores de filme (requisitando API TMDB)
+@app.route("/provedores_filme/<string:filme_id>",methods=["GET"])
+@login_required
+def provedores_filme(filme_id):
+
+    url = "https://api.themoviedb.org/3/movie/"+filme_id+"/watch/providers"
+    
+    params = {
+        "api_key": os.getenv("CHAVE_API_TMDB"),
+        "language": "pt-BR",
+    }
+
+    resposta = requests.get(url, params=params)
+
+    resultado = resposta.json()
+
+    # Se a resposta da API TMDB for que o id é invalido (status_code = 34), retornamos o status 404
+    try:
+        if resultado["status_code"] == 34:
+            return jsonify({"Mensagem": "ID de filme/série inválido."}), 404
+    except:
+        pass
+
+    # Gerando objeto json de resposta contendo os provedores apenas do Brasil
+    provedores = {"gratuito":[],"anuncios":[],"incluso":[],"comprar":[],"alugar":[]}
+    
+    if "BR" in resultado["results"]:
+        if "free" in resultado["results"]["BR"]:
+            for i in resultado["results"]["BR"]["free"]:
+
+                provedores["gratuito"].append({
+                    "img" :i["logo_path"],
+                    "nome":i["provider_name"],
+                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                    "provedor_id":i["provider_id"]
+                })
+                
+        if "ads" in resultado["results"]["BR"]:
+            for i in resultado["results"]["BR"]["ads"]:
+
+                provedores["anuncios"].append({
+                    "img" :i["logo_path"],
+                    "nome":i["provider_name"],
+                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                    "provedor_id":i["provider_id"]
+                })
+
+        if "flatrate" in resultado["results"]["BR"]:
+            for i in resultado["results"]["BR"]["flatrate"]:
+
+                provedores["incluso"].append({
+                    "img" :i["logo_path"],
+                    "nome":i["provider_name"],
+                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                    "provedor_id":i["provider_id"]
+                })
+
+        if "buy" in resultado["results"]["BR"]:
+
+            provedores["comprar"].append({
+                "img" :i["logo_path"],
+                "nome":i["provider_name"],
+                "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                "provedor_id":i["provider_id"]
+            })
+
+        if "rent" in resultado["results"]["BR"]:
+
+            provedores["alugar"].append({
+                "img" :i["logo_path"],
+                "nome":i["provider_name"],
+                "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
+                "provedor_id":i["provider_id"]
+            })
+
+    return jsonify(provedores),200
+
+
 # Personalizando resposta para usuário não autorizado
 @login_manager.unauthorized_handler
 def unauthorized():
     return jsonify({"Mensagem": "Usuário não autenticado."}), 401
 
+
 # Executando aplicação
 if __name__ == "__main__":
-    app.run(debug=True)
+    #app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

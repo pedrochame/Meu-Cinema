@@ -184,7 +184,10 @@ function esconderPagina(){
 }
 
 // Variáveis para armazenar as rotas do back-end
-let dominio = "http://127.0.0.1:5000";
+
+//let dominio = "http://127.0.0.1:5000";
+let dominio = "http://192.168.3.13:5000";
+
 let rota_login = dominio + "/login";
 let rota_cadastro = dominio + "/cadastro";
 let rota_logout = dominio + "/logout";
@@ -200,6 +203,13 @@ let rota_serie_generos = dominio + "/series_generos";
 let rota_filme_generos = dominio + "/filmes_generos";
 let rota_favoritos = dominio + "/favoritos";
 let rota_paises = dominio + "/paises";
+
+
+
+let rota_provedores_filme = dominio + "/provedores_filme";
+let rota_provedores_serie = dominio + "/provedores_serie";
+
+
 
 // Variáveis para armazenar os caminhos para as telas
 let caminho_tela_login = "login.html";

@@ -26,9 +26,113 @@ document.addEventListener("DOMContentLoaded", async () => {
         let dados = await buscaFilmeSerie(id);
         await configBtFavorito();
         configPagina(dados);
+
+        //Configurando provedores
+        let dadosProvedores = await configProvedores();
+        configPaginaProvedores(dadosProvedores);
+
     }
     exibirPagina();
 });
+
+
+// Função que preenche as informações de provedores do filme/série nos respectivos elementos da página
+function configPaginaProvedores(dados){
+
+    let painelProvedores = document.querySelector("#painelProvedores");
+
+    let dic = {
+        "gratuito" : "Grátis",
+        "anuncios" : "Grátis com anúncios",
+        "incluso"  : "Incluso na assinatura",
+        "comprar"  : "Para comprar",
+        "alugar"   : "Para alugar",
+    };
+
+    ["gratuito","anuncios","incluso","comprar","alugar"].forEach(x => {
+            
+        if(dados[x].length > 0){
+           
+            let divProvedor = document.createElement("div");
+            divProvedor.className = "container";
+
+
+            divProvedor.innerHTML = "<div class='row'><div class='col-12 text-center'><b>"+dic[x]+":</b></div></div><div class='row'><div class='col-12 d-flex flex-wrap justify-content-center' id='divProvedores_"+x+"'></div></div>";
+
+            painelProvedores.appendChild(divProvedor);
+        
+        }
+
+            
+        let divProvedoresIncluso = document.querySelector("#divProvedores_incluso");
+        let divProvedoresComprar = document.querySelector("#divProvedores_comprar");
+        let divProvedoresAlugar = document.querySelector("#divProvedores_alugar");
+        let divProvedoresGratuito = document.querySelector("#divProvedores_gratuito");
+        let divProvedoresAnuncios = document.querySelector("#divProvedores_anuncios");
+
+
+        dados[x].forEach(provedor => {
+
+            let div = document.createElement("div");
+            let img = document.createElement("img");
+            let a = document.createElement("a");
+            a.target = "_blank";
+            a.href = provedor["site"];
+            img.src = caminho_tmdb_imagem+provedor["img"];
+            img.className = "img-fluid m-2";
+            a.appendChild(img);
+            div.appendChild(a);
+
+            switch(x){
+                case "incluso": divProvedoresIncluso.appendChild(div);break;
+                case "comprar": divProvedoresComprar.appendChild(div);break;
+                case "alugar": divProvedoresAlugar.appendChild(div);break;
+                case "gratuito": divProvedoresGratuito.appendChild(div);break;
+                case "anuncios": divProvedoresAnuncios.appendChild(div);break;
+            }
+            
+        
+        });
+
+
+    });
+
+}
+
+// Função que faz requisição ao back-end para buscar os provedores do filme/série
+async function configProvedores(){
+    let url = "";
+    let param = "";
+    if(tipo == "serie"){
+        url = rota_provedores_serie;
+        param = "serie_id";    
+    }
+    if(tipo == "filme"){
+        url = rota_provedores_filme;
+        param = "filme_id";
+    }
+
+    let response = await fetch(url+"/"+id,{
+            method:"GET",
+            credentials:"include"
+    });
+
+    switch(response.status){
+        case 200:
+            let dados = await response.json();
+            console.log(dados);
+            return dados;
+        break;
+        case 401:
+            redireciona(caminho_tela_login);
+        break;
+        default:
+            exibirErro();
+        break;
+    }
+
+}
+
 
 
 btFavorito.addEventListener("click", async () => {
@@ -114,8 +218,8 @@ function configPagina(dados){
             if(dados["in_production"] == false){
                 data.textContent += getAno(dados["last_air_date"]); // Data de fim
             }
-            temporadas.innerHTML = "<b>Temporadas: </b>"+dados["number_of_seasons"] // Temporadas
-            episodios.innerHTML  = "<b>Episódios: </b>"+dados["number_of_episodes"] // Episódios
+            temporadas.innerHTML = "<b>Temporadas: </b><p>"+dados["number_of_seasons"]+"</p"; // Temporadas
+            episodios.innerHTML  = "<b>Episódios: </b><p>"+dados["number_of_episodes"]+"</p>" // Episódios
         break;
         
     }

@@ -79,3 +79,21 @@ GENEROS_FILME =  [
     {"id": 10752,"name": "Guerra"},
     {"id": 37,"name": "Faroeste"}
 ]
+
+# Dicionário com os IDs de provedores de filmes/séries no TMDB, e seus sites
+PROVEDORES_SITE = [
+    { "id": 119,            "name": "Amazon Prime Video",   "site": "https://www.primevideo.com" },
+    { "id": 1899,           "name": "Max",                  "site": "https://www.max.com/br/pt" },
+    { "id": 1825,           "name": "Max Amazon Channel",   "site": "https://www.primevideo.com" },
+    { "id": 307,            "name": "Globoplay",            "site": "https://www.globoplay.com" },
+    { "id": 337,            "name": "Disney Plus",          "site": "https://www.disneyplus.com" },
+    { "id": 8,              "name": "Netflix",              "site": "https://www.netflix.com" },
+    { "id": 531,            "name": "Paramount Plus",       "site": "https://www.paramountplus.com" },
+
+]
+
+def buscaSiteProvedor(id,name):
+    for i in PROVEDORES_SITE:
+        if id == i["id"]:
+            return i["site"]
+    return "https://www.google.com/search?q="+name
