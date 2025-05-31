@@ -6,6 +6,7 @@ let campoGenero = document.querySelector("#campoGenero");
 let campoPais = document.querySelector("#campoPais");
 let btBuscar = document.querySelector("#btBuscar");
 
+
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos as funções que se comunicarão com o back-end buscando filmes/séries e criando os elementos para que sejam exibidos na tela.
@@ -30,6 +31,30 @@ btBuscar.addEventListener("click", async () => {
     let generoBusca = campoGenero.value;
     let paisBusca = campoPais.value;
 
+    
+    // 30.05.25 : Adição de campo para filtrar por tipo (filme, série ou tudo)
+    let campoTipo = document.querySelector("#campoTipo");
+    let tipoBusca = "tudo";
+    console.log(campoTipo.value);
+    switch(campoTipo.value){
+        case "1": 
+            tipoBusca = "filme";
+            document.querySelector("#painel-series-pai").style.display = "none";
+            document.querySelector("#painel-filmes-pai").style.display = "block";
+        break;
+        case "2": 
+            tipoBusca = "serie";
+            document.querySelector("#painel-filmes-pai").style.display = "none";
+            document.querySelector("#painel-series-pai").style.display = "block";
+        break;
+        default:
+            document.querySelector("#painel-series-pai").style.display = "block";
+            document.querySelector("#painel-filmes-pai").style.display = "block";
+        break;
+    }
+    //
+
+
     esconderPagina();
 
     // Se o gênero e país forem QUALQUER (sem valor) e não houver termo de busca, fazemos a busca padrão de filmes/séries
@@ -37,7 +62,7 @@ btBuscar.addEventListener("click", async () => {
         await filmes();
         await series();
     }else{
-        await busca(termoBusca,generoBusca,paisBusca);
+        await busca(termoBusca,generoBusca,paisBusca, tipoBusca);
     }
 
     exibirPagina();
@@ -94,13 +119,13 @@ async function generos(){
 async function busca(termoBusca,generoBusca,paisBusca){
 
     let responseFilmes = await fetch(rota_filmes_busca
-        .replace("{generoBusca}",generoBusca)
-        .replace("{termoBusca}",termoBusca)
-        .replace("{paisBusca}", paisBusca),
-        {
-            method:"GET",
-            credentials:"include",
-        }
+            .replace("{generoBusca}",generoBusca)
+            .replace("{termoBusca}",termoBusca)
+            .replace("{paisBusca}", paisBusca),
+            {
+                method:"GET",
+                credentials:"include",
+            }
     );
 
     let responseSeries = await fetch(rota_series_busca
