@@ -101,34 +101,24 @@ function configPaginaProvedores(dados){
 
 // Função que faz requisição ao back-end para buscar os provedores do filme/série
 async function configProvedores(){
-    let url = "";
-    let param = "";
-    if(tipo == "serie"){
-        url = rota_provedores_serie;
-        param = "serie_id";    
-    }
-    if(tipo == "filme"){
-        url = rota_provedores_filme;
-        param = "filme_id";
-    }
-
-    let response = await fetch(url+"/"+id,{
+    
+    let response = await fetch(rota_provedores+"/"+tipo+"/"+id,{
             method:"GET",
             credentials:"include"
     });
 
     switch(response.status){
-        case 200:
-            let dados = await response.json();
-            console.log(dados);
-            return dados;
-        break;
-        case 401:
-            redireciona(caminho_tela_login);
-        break;
-        default:
-            exibirErro();
-        break;
+            case 200:
+                let dados = await response.json();
+                console.log(dados);
+                return dados;
+            break;
+            case 401:
+                redireciona(caminho_tela_login);
+            break;
+            default:
+                exibirErro();
+            break;
     }
 
 }

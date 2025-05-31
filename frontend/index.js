@@ -1,210 +1,133 @@
 // Variáveis da tela principal
 let painelFilmes = document.querySelector("#painel-filmes");
 let painelSeries = document.querySelector("#painel-series");
-let campoBusca = document.querySelector("#campoBusca");
+let campoTermo = document.querySelector("#campoTermo");
 let campoGenero = document.querySelector("#campoGenero");
 let campoPais = document.querySelector("#campoPais");
+let campoTipo = document.querySelector("#campoTipo"); // 30.05.25:Campo para filtrar por filme,serie ou tudo
 let btBuscar = document.querySelector("#btBuscar");
-
 
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
-// Se estiver, chamamos as funções que se comunicarão com o back-end buscando filmes/séries e criando os elementos para que sejam exibidos na tela.
+// Se estiver, chamamos as funções que se comunicarão com o back-end buscando gêneros, países e filmes/séries e configurarão os elementos a serem exibidos em tela.
 document.addEventListener("DOMContentLoaded", async () => {
     esconderPagina();
+    
     let usuario = await buscaUsuario();
     if(usuario == null){
         redireciona(caminho_tela_login);
     }else{
-        await filmes();
-        await series();
         await generos();
         await paises();
     }
+    
+    await buscaConteudo();
+
     exibirPagina();
+
 });
 
 // Quando o botão de busca é clicado, chamamos a função que se comunicará com o back-end na rota de pesquisa.
 btBuscar.addEventListener("click", async () => {
-
-    let termoBusca = campoBusca.value.trim();
-    let generoBusca = campoGenero.value;
-    let paisBusca = campoPais.value;
-
-    
-    // 30.05.25 : Adição de campo para filtrar por tipo (filme, série ou tudo)
-    let campoTipo = document.querySelector("#campoTipo");
-    let tipoBusca = "tudo";
-    console.log(campoTipo.value);
-    switch(campoTipo.value){
-        case "1": 
-            tipoBusca = "filme";
-            document.querySelector("#painel-series-pai").style.display = "none";
-            document.querySelector("#painel-filmes-pai").style.display = "block";
-        break;
-        case "2": 
-            tipoBusca = "serie";
-            document.querySelector("#painel-filmes-pai").style.display = "none";
-            document.querySelector("#painel-series-pai").style.display = "block";
-        break;
-        default:
-            document.querySelector("#painel-series-pai").style.display = "block";
-            document.querySelector("#painel-filmes-pai").style.display = "block";
-        break;
-    }
-    //
-
-
     esconderPagina();
-
-    // Se o gênero e país forem QUALQUER (sem valor) e não houver termo de busca, fazemos a busca padrão de filmes/séries
-    if(generoBusca == "" && termoBusca == "" && paisBusca == ""){
-        await filmes();
-        await series();
-    }else{
-        await busca(termoBusca,generoBusca,paisBusca, tipoBusca);
-    }
-
+    await buscaConteudo();
     exibirPagina();
 
 });
 
+// Se forem filmes, chama a função que vai criar os elementos visuais dos filmes no painél.
+// Se forem séries,  chama a função que vai criar os elementos visuais dos filmes no painél.
+function configuraPainel(tipoConteudo,dados){
 
-// Função que faz uma requisição ao back-end na rota de países de filmes/séries.
-// Depois, chamamos a função que irá configurar o campo de seleção de país para a busca.
-async function paises(){
-
-    let responsePaises = await fetch(rota_paises,{
-        method:"GET",
-        credentials:"include",
-    });
-
-    if(responsePaises == 401){
-        redireciona(caminho_tela_login);
+    switch(tipoConteudo){
+        case "serie":
+            document.querySelector("#painel-series-pai").style.display = "block";
+            document.querySelector("#painel-series").innerHTML = "";
+            dados.forEach(dado => { configuraDiv(false,dado); });
+        break;
+        case "filme":
+            document.querySelector("#painel-filmes-pai").style.display = "block";
+            document.querySelector("#painel-filmes").innerHTML = "";
+            dados.forEach(dado => { configuraDiv(true,dado); });
+        break;
+        default:exibirErro();break;
     }
-
-    let dadosPaises = await responsePaises.json();
-    
-    configuraCampoPais(dadosPaises);
 
 }
 
-// Função que faz duas requisições ao back-end, na rota de gêneros de filmes e na rota de gêneros de séries.
-// Depois, chamamos a função que irá configurar o campo de seleção de gênero para a busca.
-async function generos(){
+// Função que faz requsição ao back-end para buscar filmes/séries, de acordo com os parâmetros de busca.
+async function busca(rota){
 
-    let responseFilmes = await fetch(rota_filme_generos,{
-        method:"GET",
-        credentials:"include",
-    });
+    console.log(rota);
 
-    let responseSeries = await fetch(rota_serie_generos,{
-        method:"GET",
-        credentials:"include",
-    });
-
-    if(responseSeries.status == 401 || responseFilmes.status == 401){
-        redireciona(caminho_tela_login);
-    }
-
-    let dadosFilmes = await responseFilmes.json();
-    let dadosSeries = await responseSeries.json();
-    
-    configuraCampoGenero(dadosFilmes,dadosSeries);
-
-}
-
-// Função de pesquisa faz duas requisições ao back-end, na rota de pesquisa de filmes e na rota de pesquisa de séries.
-// Depois, chamamos a função que irá configurar os painéis estabelecidos na página, criando as DIVs que representarão cada um dos filmes/séries para serem exibidos na tela.
-async function busca(termoBusca,generoBusca,paisBusca){
-
-    let responseFilmes = await fetch(rota_filmes_busca
-            .replace("{generoBusca}",generoBusca)
-            .replace("{termoBusca}",termoBusca)
-            .replace("{paisBusca}", paisBusca),
-            {
-                method:"GET",
-                credentials:"include",
-            }
-    );
-
-    let responseSeries = await fetch(rota_series_busca
-        .replace("{generoBusca}",generoBusca)
-        .replace("{termoBusca}",termoBusca)
-        .replace("{paisBusca}", paisBusca),
-        {
+    let response = await fetch(rota
+        
+        //Se for rota de busca, os parâmetros serão substituidos nos locais indicados
+        .replace("{generoBusca}",campoGenero.value)
+        .replace("{termoBusca}",campoTermo.value)
+        .replace("{paisBusca}", campoPais.value)
+        
+        ,{
             method:"GET",
             credentials:"include",
         }
+
     );
 
-    // Se uma das respostas tiver status 401 (não autorizado), redirecionamos o usuário para a tela de login
-    if(responseSeries.status == 401 || responseFilmes.status == 401){
-        redireciona(caminho_tela_login);
-    }
-
-    // Se uma das respostas tiver status diferente de 200 (que é o sucesso), redirecionamos o usuário para a tela de erro
-    if(responseSeries.status != 200 || responseFilmes.status != 200){
-        exibirErro();
-    }
-
-    let filmes = await responseFilmes.json();
-    let series = await responseSeries.json();
-
-    configuraPainel(true,filmes);  
-    configuraPainel(false,series);
-
-}
-
-// Função que faz requsição ao back-end na rota de séries
-async function series(){
-
-    let response = await fetch(rota_series,{
-        method:"GET",
-        credentials:"include",
-        
-    });
-
     switch(response.status){
-        case 401:
-            redireciona(caminho_tela_login);
-        break;
+
+        default: exibirErro(); break;
         
-        case 200:
+        case 401: redireciona(caminho_tela_login); break;
+
+        case 200:   
             let dados = await response.json();
             console.log(dados);
-            configuraPainel(false,dados);
-        break;
-        
-        default:
-            exibirErro();
-        break;
+            return dados;
+
     }
 
 }
 
-// Função que faz requsição ao back-end na rota de filmes
-async function filmes(){
 
-    let response = await fetch(rota_filmes,{
-        method:"GET",
-        credentials:"include"
-    });
+// Função que configura os painéis visíveis e determina a rota de requsição ao back-end e chama a função que fará a requisição.
+async function buscaConteudo(){
 
-    switch(response.status){
-        case 401:
-            redireciona(caminho_tela_login);
-        break;
+    console.clear();
+
+    // Se forem todos os conteúdos, os painéis ficam visíveis. Se não, não.
+    if(campoTipo.value == "tudo"){
+        document.querySelector("#painel-series-pai").style.display = "block";
+        document.querySelector("#painel-filmes-pai").style.display = "block";
+    }else{
+        document.querySelector("#painel-filmes-pai").style.display = "none";
+        document.querySelector("#painel-series-pai").style.display = "none";
+    }
+
+    let dados = null;
+
+    if(campoTipo.value == "filme" || campoTipo.value == "tudo"){
         
-        case 200:
-            let dados = await response.json();
-            console.log(dados);
-            configuraPainel(true,dados);
-        break;
+            if(campoGenero.value == "" && campoTermo.value == "" && campoPais.value == ""){
+                dados = await busca(rota_filmes);
+            }else{
+                dados = await busca(rota_filmes_busca);
+            }
 
-        default:
-            exibirErro();
-        break;
+            configuraPainel("filme",dados);
+
+    }
+    
+    if(campoTipo.value == "serie" || campoTipo.value == "tudo"){
+        
+            if(campoGenero.value == "" && campoTermo.value == "" && campoPais.value == ""){
+                dados = await busca(rota_series);
+            }else{
+                dados = await busca(rota_series_busca);
+            }
+
+            configuraPainel("serie",dados);
+        
     }
 
 }
@@ -219,7 +142,6 @@ function configuraDiv(tipoFilme,filme){
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>{data_label}:</b><p>{data}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>Nota Média do IMDB: </b><p>{nota}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><i>{tipoExibir}</i></div>";
-    //filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><a href='detalhes.html?tipo={tipo}&id={id}'  class='btn btn-primary'>Detalhes</a></div>";
 
 
 
@@ -256,19 +178,6 @@ function configuraDiv(tipoFilme,filme){
 
 }
 
-// Função que recebe um json de filmes/séries, e chama a função que configura uma DIV para cada um deles
-function configuraPainel(tipoFilme, filmes){
-
-    if(tipoFilme){
-        painelFilmes.innerHTML = "";
-    }else{
-        painelSeries.innerHTML = "";
-    }
-
-    filmes.forEach(filme => {
-        configuraDiv(tipoFilme,filme);
-    });
-}
 
 // Função que recebe um json de gêneros de filmes e um json de gêneros de séries, e adiciona os valores como opções no campo de gênero para busca 
 function configuraCampoGenero(generosFilmes, generosSeries){
@@ -312,5 +221,49 @@ function configuraCampoPais(paises){
         op.value = pais["value"];
         campoPais.appendChild(op);
     });
+
+}
+
+// Função que faz uma requisição ao back-end na rota de países de filmes/séries.
+// Depois, chamamos a função que irá configurar o campo de seleção de país para a busca.
+async function paises(){
+
+    let responsePaises = await fetch(rota_paises,{
+        method:"GET",
+        credentials:"include",
+    });
+
+    if(responsePaises == 401){
+        redireciona(caminho_tela_login);
+    }
+
+    let dadosPaises = await responsePaises.json();
+    
+    configuraCampoPais(dadosPaises);
+
+}
+
+// Função que faz duas requisições ao back-end, na rota de gêneros de filmes e na rota de gêneros de séries.
+// Depois, chamamos a função que irá configurar o campo de seleção de gênero para a busca.
+async function generos(){
+
+    let responseFilmes = await fetch(rota_filme_generos,{
+        method:"GET",
+        credentials:"include",
+    });
+
+    let responseSeries = await fetch(rota_serie_generos,{
+        method:"GET",
+        credentials:"include",
+    });
+
+    if(responseSeries.status == 401 || responseFilmes.status == 401){
+        redireciona(caminho_tela_login);
+    }
+
+    let dadosFilmes = await responseFilmes.json();
+    let dadosSeries = await responseSeries.json();
+    
+    configuraCampoGenero(dadosFilmes,dadosSeries);
 
 }

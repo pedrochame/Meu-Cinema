@@ -206,8 +206,7 @@ let rota_paises = dominio + "/paises";
 
 
 
-let rota_provedores_filme = dominio + "/provedores_filme";
-let rota_provedores_serie = dominio + "/provedores_serie";
+let rota_provedores = dominio + "/provedores";
 
 
 

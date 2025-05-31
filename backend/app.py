@@ -12,7 +12,7 @@ from flask import Flask, request,jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
 from flask_cors import CORS
-from controller import usuarioController,favoritoController
+from controller import usuarioController,favoritoController,avaliacaoController
 
 # Definindo aplicação Flask
 app = Flask(__name__)
@@ -32,6 +32,7 @@ login_manager = LoginManager(app)
 # Controllers
 usuarioController = usuarioController()
 favoritoController = favoritoController()
+avaliacaoController = avaliacaoController()
 
 # Classe de Usuário (para sessão)
 class Usuario(UserMixin):
@@ -437,15 +438,17 @@ def buscaFavoritos():
     return jsonify(favoritos_json),200
 
 
-
-
-
-# Rota para buscar provedores de série (requisitando API TMDB)
-@app.route("/provedores_serie/<string:serie_id>",methods=["GET"])
+# Rota para buscar provedores de filme ou série (requisitando API TMDB)
+@app.route("/provedores/<string:tipo>/<string:id>",methods=["GET"])
 @login_required
-def provedores_serie(serie_id):
+def provedores(tipo,id):
 
-    url = "https://api.themoviedb.org/3/tv/"+serie_id+"/watch/providers"
+    if tipo == "filme": urlTipo = "movie"
+    if tipo == "serie": urlTipo = "tv"
+    if tipo not in ["filme","serie"]: 
+        return {"Mensagem" : "O tipo de conteúdo deve ser 'filme' ou 'serie'."}, 404
+
+    url = "https://api.themoviedb.org/3/"+urlTipo+"/"+id+"/watch/providers"
     
     params = {
         "api_key": os.getenv("CHAVE_API_TMDB"),
@@ -518,82 +521,133 @@ def provedores_serie(serie_id):
     return jsonify(provedores),200
 
 
-# Rota para buscar provedores de filme (requisitando API TMDB)
-@app.route("/provedores_filme/<string:filme_id>",methods=["GET"])
-@login_required
-def provedores_filme(filme_id):
 
-    url = "https://api.themoviedb.org/3/movie/"+filme_id+"/watch/providers"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Rota para registrar uma avaliação de filme/série do usuário
+@app.route("/avaliacoes",methods=["POST"])
+@login_required
+def criarAvaliacao():
+
+    if set(["filme_id","tipo","nota"]) != set(request.json.keys()): 
+        return jsonify({"Mensagem":"Os campos devem ser somente 'filme_id', 'tipo' e 'nota'."}),400
+
+    idFilme , tipo  , nota = request.json["filme_id"] , request.json["tipo"] , request.json["nota"]
+
+    if idFilme == "" or tipo not in ["filme","serie"]:
+        return jsonify({"Mensagem":"Os campos são obrigatórios."}),400
+
+    try:
+        if int(nota) < 0  or int(nota) > 5:
+            return jsonify({"Mensagem":"A nota deve ser entre 0 e 5."}),400
+    except:
+        return jsonify({"Mensagem":"A nota deve ser um número."}),400
+   
+    if avaliacaoController.criaAvaliacao(current_user.id, idFilme, tipo, nota):
+        return jsonify({"Mensagem":"Avaliação cadastrada."}),201
+    else:
+        return jsonify({"Mensagem":"Falha ao cadastrar avaliação."}),400
     
-    params = {
-        "api_key": os.getenv("CHAVE_API_TMDB"),
-        "language": "pt-BR",
+
+# Rota para deletar uma avaliação de filme/série do usuário
+@app.route("/avaliacoes/<string:filme_id>",methods=["DELETE"])
+@login_required
+def apagarAvaliacao(filme_id):
+
+    try:
+        tipo = request.args.get("tipo")
+        if tipo not in ["filme","serie"]:
+            return jsonify({"Mensagem" : "O parâmetro 'tipo' deve ser 'filme' ou 'serie'."}) , 400
+    except:
+        return jsonify({"Mensagem" : "O parâmetro 'tipo' é obrigatório."}) , 400
+
+    if avaliacaoController.apagarAvaliacao(current_user.id,filme_id,tipo):
+        return jsonify({"Mensagem":"Avaliação deletada."}),200
+    else:
+        return jsonify({"Mensagem":"Falha ao deletar avaliação."}),400
+    
+
+
+# Rota para verificar a existência de uma avaliação
+@app.route("/avaliacoes/<string:filme_id>",methods=["GET"])
+@login_required
+def verificaAvaliacao(filme_id):
+
+    tipo = request.args.get("tipo")
+    if tipo not in ["filme","serie"]:
+        return jsonify({"Mensagem" : "O parâmetro 'tipo' deve ser 'filme' ou 'serie'"}) , 400
+    
+    return jsonify({"avaliacao":avaliacaoController.verificaAvaliacao(current_user.id,filme_id,tipo)}) , 200
+
+
+
+
+
+
+
+# Rota para buscar todas as avaliações do usuário
+@app.route("/avaliacoes",methods=["GET"])
+@login_required
+def buscaAvaliacoes():
+
+    avaliados = avaliacaoController.buscaAvaliacoes(current_user.id)
+    
+    avaliados_json = {
+        "filme":[],
+        "serie":[]
     }
 
-    resposta = requests.get(url, params=params)
+    params = {
+            "api_key": os.getenv("CHAVE_API_TMDB"),
+            "language": "pt-BR",
+    }
 
-    resultado = resposta.json()
+    for avaliado in avaliados:
+        
+        if avaliado["tipo"] == "filme": 
+            url = "https://api.themoviedb.org/3/movie/"+avaliado["filme_id"]
+            resposta = requests.get(url, params=params)
 
-    # Se a resposta da API TMDB for que o id é invalido (status_code = 34), retornamos o status 404
-    try:
-        if resultado["status_code"] == 34:
-            return jsonify({"Mensagem": "ID de filme/série inválido."}), 404
-    except:
-        pass
+            if resposta.status_code != 200: return jsonify(resposta.json()),400
 
-    # Gerando objeto json de resposta contendo os provedores apenas do Brasil
-    provedores = {"gratuito":[],"anuncios":[],"incluso":[],"comprar":[],"alugar":[]}
-    
-    if "BR" in resultado["results"]:
-        if "free" in resultado["results"]["BR"]:
-            for i in resultado["results"]["BR"]["free"]:
-
-                provedores["gratuito"].append({
-                    "img" :i["logo_path"],
-                    "nome":i["provider_name"],
-                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                    "provedor_id":i["provider_id"]
-                })
-                
-        if "ads" in resultado["results"]["BR"]:
-            for i in resultado["results"]["BR"]["ads"]:
-
-                provedores["anuncios"].append({
-                    "img" :i["logo_path"],
-                    "nome":i["provider_name"],
-                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                    "provedor_id":i["provider_id"]
-                })
-
-        if "flatrate" in resultado["results"]["BR"]:
-            for i in resultado["results"]["BR"]["flatrate"]:
-
-                provedores["incluso"].append({
-                    "img" :i["logo_path"],
-                    "nome":i["provider_name"],
-                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                    "provedor_id":i["provider_id"]
-                })
-
-        if "buy" in resultado["results"]["BR"]:
-
-            provedores["comprar"].append({
-                "img" :i["logo_path"],
-                "nome":i["provider_name"],
-                "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                "provedor_id":i["provider_id"]
+            dados = resposta.json()
+            avaliados_json["filme"].append({
+                "id": dados["id"],
+                "nome":dados["name"],
+                "img":dados["poster_path"],
+                "nota":avaliado["nota"],
+                "data":avaliado["data"]
             })
 
-        if "rent" in resultado["results"]["BR"]:
+        if avaliado["tipo"] == "serie": 
+            url = "https://api.themoviedb.org/3/tv/"+avaliado["filme_id"]
+            resposta = requests.get(url, params=params)
 
-            provedores["alugar"].append({
-                "img" :i["logo_path"],
-                "nome":i["provider_name"],
-                "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                "provedor_id":i["provider_id"]
+            if resposta.status_code != 200: return jsonify(resposta.json()),400
+
+            dados = resposta.json()
+            avaliados_json["serie"].append({
+                "id": dados["id"],
+                "nome":dados["name"],
+                "img":dados["poster_path"],
+                "nota":avaliado["nota"],
+                "data":avaliado["data"]
             })
 
-    return jsonify(provedores),200
+    return jsonify(avaliados_json),200
 
 
 # Personalizando resposta para usuário não autorizado

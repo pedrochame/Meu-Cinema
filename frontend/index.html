@@ -22,16 +22,16 @@
                 <div class="container col-lg-6 col-md-8 col-sm-10">
                     <b>Tipo de Conteúdo:</b>
                     <select class="form-control" type="search" id="campoTipo">
-                        <option value="1">Filmes</option>
-                        <option value="2">Séries</option>
-                        <option value="0" selected>Filmes & Séries</option>
+                        <option value="filme" selected >Filmes</option>
+                        <option value="serie">Séries</option>
+                        <option value="tudo">Filmes & Séries</option>
                     </select>
                 </div>
             
             
                 <div class="container col-lg-6 col-md-8 col-sm-10">
                     <b>Título:</b>
-                    <input class="form-control" type="search" placeholder="Digite algo" id="campoBusca">
+                    <input class="form-control" type="search" placeholder="Digite um termo" id="campoTermo">
                 </div>
                 
                 <div class="container col-lg-6 col-md-8 col-sm-10">
@@ -56,26 +56,15 @@
 
         </div>
     
-    <div class="m-4" id="painel-filmes-pai">
-        <!--<div class="d-flex justify-content-center"><h1 id="tituloFilmes">FILMES POPULARES</h1></div>-->
-        <div id="painel-filmes" class="d-flex flex-wrap gap-3 justify-content-center"></div>
-    </div>
+        <div class="m-4" id="painel-filmes-pai">
+            <div id="painel-filmes" class="d-flex flex-wrap gap-3 justify-content-center"></div>
+        </div>
 
-    <div class="m-4" id="painel-series-pai">
-        <!--<div class="d-flex justify-content-center"><h3 id="tituloSeries">SÉRIES POPULARES</h3></div>-->
-        <div id="painel-series" class="d-flex flex-wrap gap-3 justify-content-center"></div>
-    </div>
+        <div class="m-4" id="painel-series-pai">
+            <div id="painel-series" class="d-flex flex-wrap gap-3 justify-content-center"></div>
+        </div>
 
     </div>
-
-
-
-
-
-
-
-
-
     
 </body>
 </html>
