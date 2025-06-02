@@ -132,6 +132,10 @@ async function buscaConteudo(){
 
 }
 
+
+
+
+
 // Função que cria uma DIV para filme/série e acrescenta como filho do elemento da página responsável por exibir os filmes ou séries (chamamos de painéis).
 function configuraDiv(tipoFilme,filme){
     
@@ -139,8 +143,8 @@ function configuraDiv(tipoFilme,filme){
     filmeDiv.className = "filme-div p-3 container m-3";
     filmeDiv.innerHTML = "<div class='d-flex justify-content-center'><b>{titulo}</b></div>";
     filmeDiv.innerHTML += "<div id='divImg' class='d-flex justify-content-center'><a href='detalhes.html?tipo={tipo}&id={id}'><img {imagem} class='img-fluid'></a></div>";
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>{data_label}:</b><p>{data}</p></div>";
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><b>Nota Média do IMDB: </b><p>{nota}</p></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>{data_label}:</b><p>{data}</p></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>Nota Média do IMDB: </b><p>{nota}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><i>{tipoExibir}</i></div>";
 
 
@@ -177,7 +181,6 @@ function configuraDiv(tipoFilme,filme){
     }
 
 }
-
 
 // Função que recebe um json de gêneros de filmes e um json de gêneros de séries, e adiciona os valores como opções no campo de gênero para busca 
 function configuraCampoGenero(generosFilmes, generosSeries){

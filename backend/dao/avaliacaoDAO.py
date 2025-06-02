@@ -64,10 +64,13 @@ class avaliacaoDAO():
     def verificaAvaliacao(self,usuario_id,filme_id,tipo):
         conexao = sqlite3.connect(bd_path)
         cursor = conexao.cursor()
-        cursor.execute("select * from avaliacao where usuario_id = ? and filme_id = ? and tipo = ?",[int(usuario_id),filme_id,tipo])
+        cursor.execute("select nota,data from avaliacao where usuario_id = ? and filme_id = ? and tipo = ?",[int(usuario_id),filme_id,tipo])
         registro = cursor.fetchone()
         conexao.close()
         if registro != None:
-            return True
+            return [{
+                "nota":registro[0],
+                "data":registro[1],
+            }]
         else:
-            return False
+            return []

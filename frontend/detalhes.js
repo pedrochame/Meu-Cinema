@@ -14,6 +14,8 @@ let btFavorito = document.querySelector("#btFavorito");
 let ehFavorito = false;
 let painelDetalhes = document.querySelector("#painelDetalhes");
 
+let painelAvaliacao = document.querySelector("#painelAvaliacao");
+
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos a função que se comunicará com o back-end buscando o determinado filme/série e a função que irá preencher os dados na tela com as informações obtidas.
@@ -31,9 +33,63 @@ document.addEventListener("DOMContentLoaded", async () => {
         let dadosProvedores = await configProvedores();
         configPaginaProvedores(dadosProvedores);
 
+        //Configurando painel de avaliação
+        await configAvaliacao();
+
     }
     exibirPagina();
 });
+
+async function configAvaliacao(){
+    let nota = await verificaAvaliacao();
+    let avaliacaoDiv = null
+    if(nota >=0){
+
+        avaliacaoDiv = document.createElement("div");
+        avaliacaoDiv.innerHTML = "<div class='container'><div class='row'><div class='col-12 text-center'><p>"+nota+"</p></div></div></div>";
+
+    }else{
+        avaliacaoDiv = document.createElement("div");
+        avaliacaoDiv.innerHTML = "<div class='container'><div class='row'><div class='col-12 text-center'><input class='form-control' type='number'></div></div></div>";
+    }
+    painelAvaliacao.appendChild(avaliacaoDiv);
+
+
+}
+
+async function verificaAvaliacao(){
+    let response = await fetch(rota_avaliacoes+"/"+id+"?tipo="+tipo,{
+        method:"GET",
+        credentials:"include",
+    });
+
+    switch(response.status){
+        
+        case 401: 
+            redireciona(caminho_tela_login);
+        break;
+        
+        case 200:
+            let dados = await response.json();
+            if(dados.length >0){
+                console.log("o item foi avaliado pelo usuário");
+                console.log(dados);
+                return dados[0]['nota'];
+            }else{
+                console.log("o item NÃO foi avaliado pelo usuário");
+                return -1;
+            }
+        break;
+        
+        default:
+            exibirErro();
+        break;
+    
+    }
+
+}
+
+
 
 
 // Função que preenche as informações de provedores do filme/série nos respectivos elementos da página
@@ -189,68 +245,41 @@ async function configBtFavorito(){
 // Função que preenche as informações do filme/série nos respectivos elementos da página
 function configPagina(dados){
 
-    switch(tipo){
-
-        // Informações de filme
-        case "filme":
-            titulo.textContent = dados["title"]; // Título
-            data.textContent = getAno(dados["release_date"]); // Data de lançamento
-            duracao.textContent = dados["runtime"]; // Duração
-            temporadas.style.display = "none"; // Temporadas(não há)
-            episodios.style.display = "none"; // Episódios(não há)
-        break;
-
-        // Informações de série
-        case "serie":
-            titulo.textContent = dados["name"]; // Título
-            duracao.textContent = dados["episode_run_time"]; // Duração
-            data.textContent = getAno(dados["first_air_date"]) + " - "; // Data de início
-            if(dados["in_production"] == false){
-                data.textContent += getAno(dados["last_air_date"]); // Data de fim
-            }
-            temporadas.innerHTML = "<b>Temporadas: </b><p>"+dados["number_of_seasons"]+"</p"; // Temporadas
-            episodios.innerHTML  = "<b>Episódios: </b><p>"+dados["number_of_episodes"]+"</p>" // Episódios
-        break;
-        
-    }
-    
-    
-    
-    // Capa (se não houver, é colocada uma imagem padrão)
-    if(dados["poster_path"] == null){
-        capa.src = "assets/sem_capa.png";
+    if(tipo == "filme"){
+        temporadas.style.display = "none"; // Temporadas(não há)
+        episodios.style.display = "none"; // Episódios(não há)
     }else{
-        capa.src = caminho_tmdb_imagem+dados["poster_path"];
+        temporadas.innerHTML = "<b>Temporadas: </b><p>"+dados["temporadas"]+"</p"; // Temporadas
+        episodios.innerHTML  = "<b>Episódios: </b><p>"+dados["episodios"]+"</p>" // Episódios
     }
+
+    titulo.textContent = dados["nome"]; // Título
+    data.textContent = dados["data"]; // Data de lançamento
+    duracao.textContent = dados["duracao"]; // Duração
+    capa.src = dados["capa"]; // Capa
 
     // Imagem de fundo
     document.body.style.backgroundImage = "none";
     document.body.style.backgroundColor = "rgba(255, 255, 255, 0)";
-    document.querySelector("#fundoTelaDetalhes").src = caminho_tmdb_imagem_wallpaper+dados['backdrop_path'];
+    document.querySelector("#fundoTelaDetalhes").src = dados['wallpaper'];
     document.querySelector("#fundoTelaDetalhes").style.display = "block";
 
-    // Sinopse
-    sinopse.textContent = dados["overview"];
-
-    // Gênero
-    for(let i = 0; i < dados["genres"].length ; i++){
-        genero.textContent += dados["genres"][i]["name"];
-        if ( i != dados["genres"].length - 1){
-            genero.textContent += "/";
-        }
-    }
-    
+    sinopse.textContent = dados["sinopse"];    // Sinopse
+    genero.textContent = dados["genero"];    // Gênero
 
     // Completando informação do título da página
     document.title += " "+titulo.textContent;
 
-    // Completando informação de duração do filme/série
-    if(duracao.textContent!=""){
-        duracao.textContent = "[" + duracao.textContent + " min]";
-    }
-
     // Completando informação de data do filme/série
     data.textContent = "(" + data.textContent + ")";
+
+    // Completando informação de duração
+    if(duracao.textContent != ""){
+        duracao.style.display = "block";
+        duracao.textContent = "[" + duracao.textContent + "]";
+    }else{
+        duracao.style.display = "none";
+    }
 }
 
 // Função que faz requisição ao back-end na rota de filmes ou na rota de séries

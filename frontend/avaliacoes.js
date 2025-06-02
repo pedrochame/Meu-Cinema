@@ -15,15 +15,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if(usuario == null){
         redireciona(caminho_tela_login);
     }else{
-        await favoritos();
+        await avaliacoes();
     }
     exibirPagina();
 });
 
-// Função que faz requsição ao back-end na rota de favoritos
-async function favoritos(){
+// Função que faz requsição ao back-end na rota de avaliações
+async function avaliacoes(){
 
-    let response = await fetch(rota_favoritos,{
+    let response = await fetch(rota_avaliacoes,{
         method:"GET",
         credentials:"include"
     });
@@ -48,9 +48,9 @@ async function favoritos(){
 
 }
 
-// 02.06.25 - Função que cria uma DIV para filme/série e acrescenta como filho do elemento da página responsável por exibir os filmes ou séries (chamamos de painéis).
+// Função que cria uma DIV para filme/série e acrescenta como filho do elemento da página responsável por exibir os filmes ou séries (chamamos de painéis).
 function configuraDiv(filme){
-    
+
     let filmeDiv = document.createElement("div");
     filmeDiv.className = "filme-div p-3 container m-3";
 
@@ -61,10 +61,10 @@ function configuraDiv(filme){
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center' id='divImg'><a href='detalhes.html?tipo="+filme["tipo"]+"&id="+filme["id"]+"'><img src="+filme['img']+" class='img-fluid'></a></div>";
     
     //Data
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>Data de Lançamento:</b><p>"+converteData(filme["data"])+"</p></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>Data:</b><p>"+converteData(filme["data"])+"</p></div>";
     
-    //Nota Média do IMDB
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>Nota Média do IMDB: </b><p>"+filme["notaImdb"]+"</p></div>";
+    //Nota da avaliação
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>Nota: </b><p>"+filme["nota"]+"</p></div>";
     
     //Label de Exibição (Filme ou Série)
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><i>"+filme["tipo_label"]+"</i></div>";
@@ -76,6 +76,6 @@ function configuraDiv(filme){
 // Função que recebe um json de filmes/séries, e chama a função que configura uma DIV para cada um deles
 function configuraPainel(filmes){
     filmes.forEach(filme => {
-            configuraDiv(filme);
+        configuraDiv(filme);
     });
 }

@@ -329,7 +329,22 @@ def getFilme(id):
     except:
         status = 200
     
-    return jsonify(resposta.json()),status
+    dados = resposta.json()
+    filme = {
+        "nome":dados["title"],
+        "data": dados["release_date"].split("-")[0],
+        "duracao":str(dados["runtime"])+" min",
+        "capa":"https://image.tmdb.org/t/p/w300" + dados["poster_path"],
+        "wallpaper":"https://image.tmdb.org/t/p/w1280"+dados["backdrop_path"],
+        "sinopse":dados["overview"],
+    }
+    
+    generos = ""
+    for i in dados["genres"]:
+        generos += i["name"] + " / "
+    filme["genero"] = generos[0:-3]
+
+    return jsonify(filme),status
 
 # Rota para retornar uma série específica (requisitando API TMDB)
 @app.route("/series/<string:id>",methods=["GET"])
@@ -351,7 +366,35 @@ def getSerie(id):
     except:
         status = 200
     
-    return jsonify(resposta.json()),status
+    
+    dados = resposta.json()
+    serie = {
+        "nome":dados["name"],
+        "temporadas":dados["number_of_seasons"],
+        "episodios":dados["number_of_episodes"],
+        "capa":"https://image.tmdb.org/t/p/w300" + dados["poster_path"],
+        "wallpaper":"https://image.tmdb.org/t/p/w1280"+dados["backdrop_path"],
+        "sinopse":dados["overview"],
+    }
+
+    duracao = ""
+    try:
+        duracao = str(dados["episode_run_time"][0])+" min"
+    except: pass
+
+    serie["duracao"] = duracao
+
+    if dados["in_production"] == False:
+       serie["data"] = dados["first_air_date"].split("-")[0] + " - " + dados["last_air_date"].split("-")[0]
+    else:
+        serie["data"] = dados["first_air_date"].split("-")[0] + " - "
+    
+    generos = ""
+    for i in dados["genres"]:
+        generos += i["name"] + " / "
+    serie["genero"] = generos[0:-3]
+
+    return jsonify(serie),status
 
 # Rota para registrar um filme/série como favorito do usuário
 @app.route("/favoritos",methods=["POST"])
@@ -425,7 +468,18 @@ def buscaFavoritos():
 
             if resposta.status_code != 200: return jsonify(resposta.json()),400
 
-            favoritos_json["filme"].append(resposta.json())
+            dados = resposta.json()
+            favoritos_json["filme"].append({
+                    "img" :"https://image.tmdb.org/t/p/w300"+dados["poster_path"],
+                    "nome":dados["title"],
+                    "data":dados["release_date"],
+                    "id":dados["id"],
+                    "notaImdb":dados["vote_average"],
+                    "tipo":"filme",
+                    "tipo_label":"Filme",
+                })
+
+            #favoritos_json["filme"].append(resposta.json())
             
         if favorito["tipo"] == "serie": 
             url = "https://api.themoviedb.org/3/tv/"+favorito["filme_id"]
@@ -433,7 +487,18 @@ def buscaFavoritos():
 
             if resposta.status_code != 200: return jsonify(resposta.json()),400
 
-            favoritos_json["serie"].append(resposta.json())
+            dados = resposta.json()
+            favoritos_json["serie"].append({
+                    "img" :"https://image.tmdb.org/t/p/w300"+dados["poster_path"],
+                    "nome":dados["name"],
+                    "data":dados["first_air_date"],
+                    "id":dados["id"],
+                    "notaImdb":dados["vote_average"],
+                    "tipo": "serie",
+                    "tipo_label":"Série",
+            })
+
+            #favoritos_json["serie"].append(resposta.json())
 
     return jsonify(favoritos_json),200
 
@@ -474,7 +539,7 @@ def provedores(tipo,id):
             for i in resultado["results"]["BR"]["free"]:
 
                 provedores["gratuito"].append({
-                    "img" :i["logo_path"],
+                    "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
                     "nome":i["provider_name"],
                     "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                     "provedor_id":i["provider_id"]
@@ -484,7 +549,7 @@ def provedores(tipo,id):
             for i in resultado["results"]["BR"]["ads"]:
 
                 provedores["anuncios"].append({
-                    "img" :i["logo_path"],
+                    "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
                     "nome":i["provider_name"],
                     "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                     "provedor_id":i["provider_id"]
@@ -494,7 +559,7 @@ def provedores(tipo,id):
             for i in resultado["results"]["BR"]["flatrate"]:
 
                 provedores["incluso"].append({
-                    "img" :i["logo_path"],
+                    "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
                     "nome":i["provider_name"],
                     "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                     "provedor_id":i["provider_id"]
@@ -503,7 +568,7 @@ def provedores(tipo,id):
         if "buy" in resultado["results"]["BR"]:
 
             provedores["comprar"].append({
-                "img" :i["logo_path"],
+                "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
                 "nome":i["provider_name"],
                 "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                 "provedor_id":i["provider_id"]
@@ -512,30 +577,13 @@ def provedores(tipo,id):
         if "rent" in resultado["results"]["BR"]:
 
             provedores["alugar"].append({
-                "img" :i["logo_path"],
+                "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
                 "nome":i["provider_name"],
                 "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                 "provedor_id":i["provider_id"]
             })
 
     return jsonify(provedores),200
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Rota para registrar uma avaliação de filme/série do usuário
 @app.route("/avaliacoes",methods=["POST"])
@@ -590,12 +638,8 @@ def verificaAvaliacao(filme_id):
     if tipo not in ["filme","serie"]:
         return jsonify({"Mensagem" : "O parâmetro 'tipo' deve ser 'filme' ou 'serie'"}) , 400
     
-    return jsonify({"avaliacao":avaliacaoController.verificaAvaliacao(current_user.id,filme_id,tipo)}) , 200
-
-
-
-
-
+    dados = avaliacaoController.verificaAvaliacao(current_user.id,filme_id,tipo)
+    return jsonify(dados), 200
 
 
 # Rota para buscar todas as avaliações do usuário
@@ -627,9 +671,11 @@ def buscaAvaliacoes():
             avaliados_json["filme"].append({
                 "id": dados["id"],
                 "nome":dados["name"],
-                "img":dados["poster_path"],
+                "img" :"https://image.tmdb.org/t/p/w300"+dados["poster_path"],
                 "nota":avaliado["nota"],
-                "data":avaliado["data"]
+                "data":avaliado["data"],
+                "tipo":avaliado["tipo"],
+                "tipo_label":"Filme",
             })
 
         if avaliado["tipo"] == "serie": 
@@ -642,9 +688,11 @@ def buscaAvaliacoes():
             avaliados_json["serie"].append({
                 "id": dados["id"],
                 "nome":dados["name"],
-                "img":dados["poster_path"],
+                "img" :"https://image.tmdb.org/t/p/w300"+dados["poster_path"],
                 "nota":avaliado["nota"],
-                "data":avaliado["data"]
+                "data":avaliado["data"],
+                "tipo":avaliado["tipo"],
+                "tipo_label":"Série",
             })
 
     return jsonify(avaliados_json),200

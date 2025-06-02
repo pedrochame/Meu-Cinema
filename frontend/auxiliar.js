@@ -31,7 +31,17 @@ function converteData(data){
     if(data == ""){
         return data;
     }
-    return data.split("-")[2]+"/"+data.split("-")[1]+"/"+data.split("-")[0];
+
+  
+    if(data.split(" ").length > 1){
+        let d = data.split(" ")[0];
+        return d.split("-")[2]+"/"+d.split("-")[1]+"/"+d.split("-")[0] + " às " + data.split(" ")[1];
+    }else{
+        return data.split("-")[2]+"/"+data.split("-")[1]+"/"+data.split("-")[0];
+    }
+
+
+
 }
 
 // Função que recebe uma string de data e retorna somente o ano
@@ -126,16 +136,21 @@ function esconderPagina(){
             atalhos = ["login","cadastro"];
         }else{
         // Se a página atual não for login ou cadastro, apenas as outras opções aparecem (usuário logado)
-            atalhos = ["index","favoritos","perfil"];
+            atalhos = ["index","favoritos","perfil","avaliacoes"];
         }
 
         let headerhtml = "<div class='container mt-3'><div class='row m-2'><div class='col-12 text-center'><img class='img-fluid' src='assets/logo.png'></div></div><div class='row'><nav class=' navbar navbar-expand-md'><div class='container-fluid d-flex justify-content-center text-center'><button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarConteudo' aria-controls='navbarConteudo' aria-expanded='false' aria-label='Alternar navegação'><a>Menu</a></button><div class='collapse navbar-collapse' id='navbarConteudo'><ul class='navbar-nav mx-auto mt-2'>{ATALHOS}</nav></ul></div></div></div></div>";
 
         let atalhoshtml = "";
         atalhos.forEach(a => {
-            //atalhoshtml += "<a href='"+a+".html'>"+a.toUpperCase()+"</a>";
 
-            atalhoshtml += "<li class='nav-item'><a class='nav-link active' href='"+a+".html'>"+a.charAt(0).toUpperCase()+a.slice(1)+"</a></li>";
+            if(a == "avaliacoes"){
+                atalhoshtml += "<li class='nav-item'><a class='nav-link active' href='"+a+".html'>Avaliações</a></li>";
+            }else{
+
+                atalhoshtml += "<li class='nav-item'><a class='nav-link active' href='"+a+".html'>"+a.charAt(0).toUpperCase()+a.slice(1)+"</a></li>";
+            
+            }
 
         });
         header.innerHTML = headerhtml.replace("{ATALHOS}",atalhoshtml);
@@ -207,7 +222,7 @@ let rota_paises = dominio + "/paises";
 
 
 let rota_provedores = dominio + "/provedores";
-
+let rota_avaliacoes = dominio + "/avaliacoes"
 
 
 // Variáveis para armazenar os caminhos para as telas
@@ -215,7 +230,9 @@ let caminho_tela_login = "login.html";
 let caminho_tela_cadastro = "cadastro.html";
 let caminho_tela_perfil = "perfil.html";
 let caminho_tela_index = "index.html";
+let caminho_tela_avaliacoes = "avaliacoes.html"
 
-// Variáveis de imagens da API TMDB
-let caminho_tmdb_imagem = "https://image.tmdb.org/t/p/w300";
-let caminho_tmdb_imagem_wallpaper = "https://image.tmdb.org/t/p/w1280";
+
+// Variáveis com os caminhos das imagens fornecidas pelo TMDB
+let caminho_tmdb_imagem_wallpaper="https://image.tmdb.org/t/p/w1280"
+let caminho_tmdb_imagem = "https://image.tmdb.org/t/p/w300"
