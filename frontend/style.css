@@ -145,3 +145,13 @@ body{
     border: 2px solid black;
     box-shadow: 3px 3px 3px black;
 }
+
+/* Estrelas que aparecem na tela de Detalhes, para que o usuário faça uma avaliação */
+.estrela:hover{
+    cursor:pointer;
+}
+
+/* Coração nas DIVs de filme/série que indicam que é um favorito e avaliado */
+.img-favorito,.img-avaliado{
+    width: 30px;
+}

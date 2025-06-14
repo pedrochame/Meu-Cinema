@@ -29,3 +29,11 @@ class avaliacaoController():
         else:
             print("Avaliação de usuário = "+usuario_id+" e filme/série = "+filme_id+" deletada.")
         return resp
+    
+    def editarAvaliacao(self,id,nota):
+        resp = self.repo.editarAvaliacao(id,nota)
+        if resp == True:
+            print("Avaliação de ID = "+str(id)+" editada para nota = "+str(nota)+".")
+        else:
+            print("Avaliação de ID = "+str(id)+" não editada.")
+        return resp

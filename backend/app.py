@@ -281,7 +281,9 @@ def series_busca():
         }
     
         resp = requests.get(url, params=params)
-        if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter séries por gênero/país da API do TMDB."}),502
+        if resp.status_code != 200: 
+            return jsonify({"Mensagem": "Erro ao obter séries por gênero/país da API do TMDB."}),502
+        
         return jsonify(resp.json()["results"]),200
 
     else:
@@ -629,6 +631,28 @@ def apagarAvaliacao(filme_id):
     
 
 
+# Rota para editar uma avaliação de filme/série do usuário
+@app.route("/avaliacoes/<string:id>",methods=["PATCH"])
+@login_required
+def editarAvaliacao(id):
+
+    if set(["nota"]) != set(request.json.keys()):
+        return jsonify({"Mensagem" : "Apenas o parâmetro 'nota' é necessário."}) , 400
+
+    try:
+        nota = request.json["nota"]
+        print(nota)
+        if int(nota) < 1 or int(nota) > 5:
+            return jsonify({"Mensagem" : "O parâmetro 'nota' deve ser um número de 1 a 5."}) , 400
+    except:
+        return jsonify({"Mensagem" : "O parâmetro 'nota' é obrigatório."}) , 400
+
+    if avaliacaoController.editarAvaliacao(id,nota):
+        return jsonify({"Mensagem":"Avaliação editada."}),200
+    else:
+        return jsonify({"Mensagem":"Falha ao editar avaliação."}),400
+    
+
 # Rota para verificar a existência de uma avaliação
 @app.route("/avaliacoes/<string:filme_id>",methods=["GET"])
 @login_required
@@ -670,7 +694,7 @@ def buscaAvaliacoes():
             dados = resposta.json()
             avaliados_json["filme"].append({
                 "id": dados["id"],
-                "nome":dados["name"],
+                "nome":dados["title"],
                 "img" :"https://image.tmdb.org/t/p/w300"+dados["poster_path"],
                 "nota":avaliado["nota"],
                 "data":avaliado["data"],

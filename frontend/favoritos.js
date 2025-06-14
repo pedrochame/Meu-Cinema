@@ -49,7 +49,7 @@ async function favoritos(){
 }
 
 // 02.06.25 - Função que cria uma DIV para filme/série e acrescenta como filho do elemento da página responsável por exibir os filmes ou séries (chamamos de painéis).
-function configuraDiv(filme){
+async function configuraDiv(filme){
     
     let filmeDiv = document.createElement("div");
     filmeDiv.className = "filme-div p-3 container m-3";
@@ -68,6 +68,26 @@ function configuraDiv(filme){
     
     //Label de Exibição (Filme ou Série)
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><i>"+filme["tipo_label"]+"</i></div>";
+
+    //Indicador de favorito e avaliado (se for)
+    let response = await fetch(rota_avaliacoes+"/"+filme["id"]+"?tipo="+filme["tipo"],{
+            method:"GET",
+            credentials:"include",
+            headers: { "Content-Type": "application/json" },
+    });
+
+    if(response.status==200){
+        let dados = await response.json();
+        console.log(dados);
+        if(dados.length>0){
+            filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/favorito.png'><img class='img-avaliado' src='assets/avaliado.png'></div>";
+        }else{
+            filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/favorito.png'></div>";
+        }
+    }
+
+
+
 
     painelConteudo.appendChild(filmeDiv);
 

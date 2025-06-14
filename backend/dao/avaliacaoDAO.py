@@ -64,13 +64,28 @@ class avaliacaoDAO():
     def verificaAvaliacao(self,usuario_id,filme_id,tipo):
         conexao = sqlite3.connect(bd_path)
         cursor = conexao.cursor()
-        cursor.execute("select nota,data from avaliacao where usuario_id = ? and filme_id = ? and tipo = ?",[int(usuario_id),filme_id,tipo])
+        cursor.execute("select nota,data,id from avaliacao where usuario_id = ? and filme_id = ? and tipo = ?",[int(usuario_id),filme_id,tipo])
         registro = cursor.fetchone()
         conexao.close()
+        registro_json = []
         if registro != None:
-            return [{
+            registro_json.append({
                 "nota":registro[0],
                 "data":registro[1],
-            }]
-        else:
-            return []
+                "id"  :registro[2]
+            })
+        
+        return registro_json
+    
+    # Função que edita uma avaliação
+    def editarAvaliacao(self,id,nota):
+        conexao = sqlite3.connect(bd_path)
+        cursor = conexao.cursor()
+        try:
+            cursor.execute("update avaliacao set nota = ? , data = CURRENT_TIMESTAMP where id = ?",[int(nota),int(id)])
+            conexao.commit()
+            return True
+        except:
+            pass 
+        conexao.close()
+        return False

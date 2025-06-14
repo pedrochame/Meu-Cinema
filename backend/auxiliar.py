@@ -89,6 +89,7 @@ PROVEDORES_SITE = [
     { "id": 337,            "name": "Disney Plus",          "site": "https://www.disneyplus.com" },
     { "id": 8,              "name": "Netflix",              "site": "https://www.netflix.com" },
     { "id": 531,            "name": "Paramount Plus",       "site": "https://www.paramountplus.com" },
+    { "id": 283,            "name": "Crunchyroll",          "site": "https://www.crunchyroll.com" },
 
 ]
 

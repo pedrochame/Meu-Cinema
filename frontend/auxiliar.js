@@ -32,14 +32,15 @@ function converteData(data){
         return data;
     }
 
-  
+    let dt = new Date();
+    dt.setUTCFullYear(data.split(" ")[0].split("-")[0],data.split(" ")[0].split("-")[1]-1,data.split(" ")[0].split("-")[2]);
+    
     if(data.split(" ").length > 1){
-        let d = data.split(" ")[0];
-        return d.split("-")[2]+"/"+d.split("-")[1]+"/"+d.split("-")[0] + " às " + data.split(" ")[1];
+        dt.setUTCHours(data.split(" ")[1].split(":")[0],data.split(" ")[1].split(":")[1],data.split(" ")[1].split(":")[2]);
+        return dt.toLocaleString();
     }else{
-        return data.split("-")[2]+"/"+data.split("-")[1]+"/"+data.split("-")[0];
+        return dt.toLocaleDateString();
     }
-
 
 
 }

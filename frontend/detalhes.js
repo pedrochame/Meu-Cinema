@@ -14,6 +14,9 @@ let btFavorito = document.querySelector("#btFavorito");
 let ehFavorito = false;
 let painelDetalhes = document.querySelector("#painelDetalhes");
 
+
+let ehAvaliado = false;
+let idAvaliacao = 0;
 let painelAvaliacao = document.querySelector("#painelAvaliacao");
 
 // Assim que a página é carregada, é verificado se o usuário está logado.
@@ -40,23 +43,118 @@ document.addEventListener("DOMContentLoaded", async () => {
     exibirPagina();
 });
 
+// Função que configura a DIV responsável pela exibição da avaliação feita pelo usuário
 async function configAvaliacao(){
-    let nota = await verificaAvaliacao();
-    let avaliacaoDiv = null
-    if(nota >=0){
-
-        avaliacaoDiv = document.createElement("div");
-        avaliacaoDiv.innerHTML = "<div class='container'><div class='row'><div class='col-12 text-center'><p>"+nota+"</p></div></div></div>";
-
-    }else{
-        avaliacaoDiv = document.createElement("div");
-        avaliacaoDiv.innerHTML = "<div class='container'><div class='row'><div class='col-12 text-center'><input class='form-control' type='number'></div></div></div>";
+    let dados = await verificaAvaliacao();
+    
+    if(dados == null){
+        ehAvaliado = false;
+        document.querySelector("#divRemoverAvaliacao").style.display="none";
     }
-    painelAvaliacao.appendChild(avaliacaoDiv);
 
+    if(dados!=null){
+        idAvaliacao = dados['id'];
+        notaAvaliacao = dados['nota'];
+        dataAvaliacao = dados['data'];
+        ehAvaliado = true;
+
+        for(let i = 1 ; i <= notaAvaliacao; i++){
+            document.querySelector("#estrela"+i).src = 'assets/estrela1.png';
+        }
+
+
+
+        document.querySelector("#dataAvaliacao").textContent = "Avaliado em "+ converteData(dataAvaliacao);
+    
+        
+    }
+
+    liberarAvaliacao();
+    
+}
+
+
+
+//Se o filme/série não tiver sido avaliado, ao passar o mouse sobre as estrelas, elas mudam de cor, indicando a nota que o usuário está dando.
+function liberarAvaliacao(){
+
+    for(let i = 1; i<=5;i++){
+
+        document.querySelector("#estrela"+i).addEventListener("mouseover", ()=>{
+                for(let j = 1; j<= i; j++){
+                        document.querySelector("#estrela"+j).src = 'assets/estrela1.png';
+                }    
+        });
+
+        document.querySelector("#estrela"+i).addEventListener("mouseout", ()=>{
+                
+                if(ehAvaliado){
+                    for(let j = 1; j<= notaAvaliacao; j++){
+                        document.querySelector("#estrela"+j).src = 'assets/estrela1.png';
+                    }
+                    for(let j = notaAvaliacao+1; j<= 5; j++){
+                        document.querySelector("#estrela"+j).src = 'assets/estrela0.png';
+                    }
+                }else{
+                    for(let j = 1; j<= i; j++){
+                        document.querySelector("#estrela"+j).src = 'assets/estrela0.png';
+                    }    
+                }
+        }); 
+        
+            
+        document.querySelector("#estrela"+i).addEventListener("click",()=>{
+                console.log("nota do usuario: " + i);
+                enviarAvaliacao(i);
+        });
+    
+    }
 
 }
 
+//Função que faz requisição na rota de inclusão de avaliação
+async function enviarAvaliacao(nota) {
+    
+    
+    let response = null;
+
+    if(ehAvaliado == false){
+        
+        response = await fetch(rota_avaliacoes,{
+                method:"POST",
+                credentials:"include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    "filme_id" : id,
+                    "tipo" : tipo,
+                    "nota" : nota,
+                })
+        });
+
+    }else{
+            
+        response = await fetch(rota_avaliacoes+"/"+idAvaliacao,{
+                method:"PATCH",
+                credentials:"include",
+                headers: { "Content-Type": "application/json" },
+                 body: JSON.stringify({ 
+                    "nota" : nota,
+                })
+        });
+
+    }
+    
+    if(response!=null){
+        let dados = await response.json();
+        console.log(dados);
+        if(response.status==200){
+            console.log("Avaliação feita com sucesso!");
+            await verificaAvaliacao();
+        }
+    }
+}
+
+//Função que faz requisição ao back-end para verificar a avaliação do usuário sobre o filme/série
 async function verificaAvaliacao(){
     let response = await fetch(rota_avaliacoes+"/"+id+"?tipo="+tipo,{
         method:"GET",
@@ -74,10 +172,10 @@ async function verificaAvaliacao(){
             if(dados.length >0){
                 console.log("o item foi avaliado pelo usuário");
                 console.log(dados);
-                return dados[0]['nota'];
+                return dados[0];
             }else{
                 console.log("o item NÃO foi avaliado pelo usuário");
-                return -1;
+                return null;
             }
         break;
         
@@ -88,6 +186,24 @@ async function verificaAvaliacao(){
     }
 
 }
+
+// Se o filme/série tiver avaliação, o botão de remover avaliação estará disponível.
+// Se for clicado, deve se comunicar com o back-end na rota de deleção de avaliação.
+document.querySelector("#btRemoverAvaliacao").addEventListener("click", async () => {
+    let response = await fetch(rota_avaliacoes+"/"+id+"?filme_id="+id+"&tipo="+tipo,{
+                method:"DELETE",
+                credentials:"include",
+            });
+
+        await configAvaliacao();
+
+});
+
+
+
+
+
+
 
 
 

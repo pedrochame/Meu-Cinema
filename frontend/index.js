@@ -137,7 +137,7 @@ async function buscaConteudo(){
 
 
 // Função que cria uma DIV para filme/série e acrescenta como filho do elemento da página responsável por exibir os filmes ou séries (chamamos de painéis).
-function configuraDiv(tipoFilme,filme){
+async function configuraDiv(tipoFilme,filme){
     
     let filmeDiv = document.createElement("div");
     filmeDiv.className = "filme-div p-3 container m-3";
@@ -146,6 +146,64 @@ function configuraDiv(tipoFilme,filme){
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>{data_label}:</b><p>{data}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>Nota Média do IMDB: </b><p>{nota}</p></div>";
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><i>{tipoExibir}</i></div>";
+
+
+
+    //Indicador de favorito (se for) e avaliado (se for)
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'>";
+    filmeDiv.innerHTML += "<img class='img-favorito' src='assets/favorito.png' {hidden_favorito} >";
+    filmeDiv.innerHTML += "<img class='img-favorito' src='assets/avaliado.png' {hidden_avaliado} >";
+    filmeDiv.innerHTML += "</div>";
+
+
+
+
+
+
+
+let url = rota_favoritos+"/"+filme["id"]+"?tipo=serie";
+    if(tipoFilme){
+        url = rota_favoritos+"/"+filme["id"]+"?tipo=filme";
+    }
+    let response = await fetch(url,{
+            method:"GET",
+            credentials:"include",
+            headers: { "Content-Type": "application/json" },
+    });
+
+    if(response.status==200){
+        let dados = await response.json();
+        console.log(dados);
+        if(dados["favorito"]){
+            filmeDiv.innerHTML = filmeDiv.innerHTML.replace("{hidden_favorito}","");
+        }else{
+            filmeDiv.innerHTML = filmeDiv.innerHTML.replace("{hidden_favorito}","hidden");
+        }
+    }
+
+    url = rota_avaliacoes+"/"+filme["id"]+"?tipo=serie";
+    if(tipoFilme){
+        url = rota_avaliacoes+"/"+filme["id"]+"?tipo=filme";
+    }
+    response = await fetch(url,{
+            method:"GET",
+            credentials:"include",
+            headers: { "Content-Type": "application/json" },
+    });
+
+    if(response.status==200){
+        let dados = await response.json();
+        console.log(dados);
+        if(dados.length>0){
+            filmeDiv.innerHTML = filmeDiv.innerHTML.replace("{hidden_avaliado}","");
+        }else{
+            filmeDiv.innerHTML = filmeDiv.innerHTML.replace("{hidden_avaliado}","hidden");
+        }
+    }
+
+
+
+
 
 
 
@@ -179,6 +237,17 @@ function configuraDiv(tipoFilme,filme){
         .replace("{nota}",filme["vote_average"]);
         painelSeries.appendChild(filmeDiv);
     }
+
+
+
+
+
+
+
+
+
+
+    
 
 }
 
