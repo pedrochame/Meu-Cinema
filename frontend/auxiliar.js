@@ -202,7 +202,8 @@ function esconderPagina(){
 // Variáveis para armazenar as rotas do back-end
 
 //let dominio = "http://127.0.0.1:5000";
-let dominio = "http://192.168.3.13:5000";
+//let dominio = "http://192.168.3.13:5000";
+let dominio = "https://meu-cinema-backend.onrender.com";
 
 let rota_login = dominio + "/login";
 let rota_cadastro = dominio + "/cadastro";
