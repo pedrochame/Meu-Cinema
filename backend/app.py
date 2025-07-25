@@ -20,6 +20,12 @@ app = Flask(__name__)
 # Ativando CORS
 CORS(app,supports_credentials=True)
 
+# Configura cookies de sessão
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",  # Permite cookies cross-domain
+    SESSION_COOKIE_SECURE=True       # Obrigatório para HTTPS
+)
+
 # Carregando variáveis de ambiente (arquivo .env)
 load_dotenv()
 
