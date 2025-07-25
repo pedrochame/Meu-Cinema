@@ -340,12 +340,14 @@ async function configBtFavorito(){
             if(dados["favorito"]){
                 console.log("o item é favorito do usuário");
                 btFavorito.value = "Remover dos favoritos";
-                btFavorito.className += "btn-danger";
+                //btFavorito.className += "btn-danger";
+                btFavorito.className = btFavorito.className.replace("btn-success","btn-danger");
                 ehFavorito = true;
             }else{
                 console.log("o item NÃO É favorito do usuário");
                 btFavorito.value = "Adicionar aos favoritos";
-                btFavorito.className += "btn-success";
+                //btFavorito.className += "btn-success";
+                btFavorito.className = btFavorito.className.replace("btn-danger","btn-success");
                 ehFavorito = false;
             }
         break;
