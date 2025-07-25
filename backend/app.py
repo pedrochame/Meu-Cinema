@@ -728,7 +728,12 @@ def unauthorized():
     return jsonify({"Mensagem": "Usuário não autenticado."}), 401
 
 
-# Executando aplicação
-if __name__ == "__main__":
+# Executando aplicação localmente
+#if __name__ == "__main__":
     #app.run(debug=True)
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    #app.run(host="0.0.0.0", port=5000, debug=True)
+
+# Executando aplicação hospedada
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
