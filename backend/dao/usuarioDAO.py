@@ -1,8 +1,5 @@
-import sqlite3
+import sqlite3,os
 from werkzeug.security import generate_password_hash, check_password_hash
-
-# Caminho para o arquivo do banco de dados
-bd_path = "backend/bd.db"
 
 class usuarioDAO():
 
@@ -11,7 +8,7 @@ class usuarioDAO():
 
     # Função que recebe um id e retorna o nome do usuário
     def retornaUsuarioNome(self,id):
-        conexao = sqlite3.connect(bd_path)
+        conexao = sqlite3.connect(os.getenv("BD_PATH"))
         cursor = conexao.cursor()
         cursor.execute("select nome from usuario where id = ?",[id])
         registro = cursor.fetchone()
@@ -20,7 +17,7 @@ class usuarioDAO():
 
     # Função que recebe um id e verifica se o usuário existe no banco
     def verificaUsuario(self,id):
-        conexao = sqlite3.connect(bd_path)
+        conexao = sqlite3.connect(os.getenv("BD_PATH"))
         cursor = conexao.cursor()
         cursor.execute("select * from usuario where id = ?",[id])
         registro = cursor.fetchone()
@@ -33,7 +30,7 @@ class usuarioDAO():
     # Função que recebe nome e senha, e busca o usuário no banco.
     # Se encontrar, retorna seu ID. Se não, retorna -1.
     def buscaUsuario(self,nome,senha):
-        conexao = sqlite3.connect(bd_path)
+        conexao = sqlite3.connect(os.getenv("BD_PATH"))
         cursor = conexao.cursor()
         cursor.execute("select id,senha from usuario where nome = ?",[nome])
         registro = cursor.fetchone()
@@ -53,7 +50,7 @@ class usuarioDAO():
         # Criptografando senha
         senha = generate_password_hash(senha)
 
-        conexao = sqlite3.connect(bd_path)
+        conexao = sqlite3.connect(os.getenv("BD_PATH"))
         cursor = conexao.cursor()
         try:
             cursor.execute("insert into usuario(nome,senha) values (?,?)",[nome,senha])
