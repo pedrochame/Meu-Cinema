@@ -83,6 +83,12 @@ function exibirErro(){
 
 function exibirPagina(){
 
+    // O atalho no cabeçalho para a página em que o usuário está fica em cor diferente
+    let pagAtual = window.location.pathname.split("/")[(window.location.pathname.split("/").length-1)];
+    pagAtual = pagAtual.replace(".html","");
+    console.log(pagAtual);
+    document.querySelector("#atalho_"+pagAtual).style.color = "gold";
+
 
     // Exibindo div de conteúdo
     document.querySelector("#divConteudo").style.display = "block";
@@ -120,7 +126,7 @@ function personalizaIconesFooter(){
 }
 
 
-function esconderPagina(){
+async function esconderPagina(){
 
 
 
@@ -128,17 +134,18 @@ function esconderPagina(){
     if(document.querySelector("#divHeader") == null){ 
         let header = document.createElement("div");
         header.id = "divHeader";
-
-
-        let pagAtual = window.location.pathname.split("/")[(window.location.pathname.split("/").length-1)];
+        
         let atalhos = [];
-        // Se a página atual for Login ou Cadastro, apenas essas opções aparecem no cabeçalho (usuário deslogado)
-        if(pagAtual == "login.html" || pagAtual == "cadastro.html"){
-            atalhos = ["login","cadastro"];
+        // Se usuário está logado, todas as opções aparecem. Se não, somente de login e início
+        let usuario = await buscaUsuario();
+        if(usuario==null){
+            atalhos = ["login","index"];
         }else{
-        // Se a página atual não for login ou cadastro, apenas as outras opções aparecem (usuário logado)
             atalhos = ["index","favoritos","perfil","avaliacoes"];
         }
+
+
+
 
         let headerhtml = "<div class='container mt-3'><div class='row m-2'><div class='col-12 text-center'><img class='img-fluid' src='assets/logo.png'></div></div><div class='row'><nav class=' navbar navbar-expand-md'><div class='container-fluid d-flex justify-content-center text-center'><button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarConteudo' aria-controls='navbarConteudo' aria-expanded='false' aria-label='Alternar navegação'><a>Menu</a></button><div class='collapse navbar-collapse' id='navbarConteudo'><ul class='navbar-nav mx-auto mt-2'>{ATALHOS}</nav></ul></div></div></div></div>";
 
@@ -146,10 +153,12 @@ function esconderPagina(){
         atalhos.forEach(a => {
 
             if(a == "avaliacoes"){
-                atalhoshtml += "<li class='nav-item'><a class='nav-link active' href='"+a+".html'>Avaliações</a></li>";
-            }else{
+                atalhoshtml += "<li class='nav-item'><a id='atalho_"+a+"'  class='nav-link active' href='"+a+".html'>Avaliações</a></li>";
+            }else if(a == "index"){
 
-                atalhoshtml += "<li class='nav-item'><a class='nav-link active' href='"+a+".html'>"+a.charAt(0).toUpperCase()+a.slice(1)+"</a></li>";
+                atalhoshtml += "<li class='nav-item'><a id='atalho_"+a+"'  class='nav-link active' href='"+a+".html'>Início</a></li>";
+            }else{
+                atalhoshtml += "<li class='nav-item'><a id='atalho_"+a+"'  class='nav-link active' href='"+a+".html'>"+a.charAt(0).toUpperCase()+a.slice(1)+"</a></li>";
             
             }
 
@@ -202,7 +211,6 @@ function esconderPagina(){
 // Variáveis para armazenar as rotas do back-end
 
 //let dominio = "http://127.0.0.1:5000";
-//let dominio = "http://192.168.3.13:5000";
 let dominio = "https://meu-cinema-backend.onrender.com";
 
 let rota_login = dominio + "/login";

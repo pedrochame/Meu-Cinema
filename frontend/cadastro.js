@@ -52,4 +52,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location = "perfil.html";
     }
     exibirPagina();
+
+        // Ao clicar no link da página de login, redirecionar
+    document.querySelector("#linkLogin").addEventListener("click",()=>{
+        redireciona(caminho_tela_login);
+    });
+
 });

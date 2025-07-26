@@ -93,16 +93,21 @@ body{
     b{
         font-size: large;
         color: black;
-       background-color: rgba(0,0,0,0.075);
+        /*background-color: rgba(0,0,0,0.075);*/
         padding: 4px;
     }
 }
-#painelDetalhes{
+#painelDetalhes,#painelAvaliacao,#painelProvedores{
 
     b{
         color: black;
         font-size:x-large;
-        background-color: rgba(0,0,0,0.075);
+        
+        
+        /*background-color: rgba(0,0,0,0.075);*/
+        
+        
+        
         padding: 4px;
     }
     #capa{
@@ -113,24 +118,20 @@ body{
     }
     p,i{
         font-weight: bold;
-       background-color: rgba(0,0,0,0.075);
+       /*background-color: rgba(0,0,0,0.075);*/
        padding: 4px;
+       font-size:large;
     }
 
 }
 
 #fundoTelaDetalhes{
     position:fixed;
-    opacity: 0.6;
+    opacity: 0.2;
     z-index: -1;
     width: 100vw;
     height: 100vh;
 }
-
-
-
-
-
 
 
 
@@ -154,4 +155,9 @@ body{
 /* Coração nas DIVs de filme/série que indicam que é um favorito e avaliado */
 .img-favorito,.img-avaliado{
     width: 30px;
+}
+
+/* Links */
+a:hover{
+    cursor:pointer;
 }

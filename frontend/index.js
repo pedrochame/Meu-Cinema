@@ -13,6 +13,7 @@ let btBuscar = document.querySelector("#btBuscar");
 document.addEventListener("DOMContentLoaded", async () => {
     esconderPagina();
     
+    /*
     let usuario = await buscaUsuario();
     if(usuario == null){
         redireciona(caminho_tela_login);
@@ -21,6 +22,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         await paises();
     }
     
+    */
+    await generos();
+    await paises();
+
+
+
     await buscaConteudo();
 
     exibirPagina();
@@ -37,18 +44,24 @@ btBuscar.addEventListener("click", async () => {
 
 // Se forem filmes, chama a função que vai criar os elementos visuais dos filmes no painél.
 // Se forem séries,  chama a função que vai criar os elementos visuais dos filmes no painél.
-function configuraPainel(tipoConteudo,dados){
+async function configuraPainel(tipoConteudo,dados){
+
+    let usuario = await buscaUsuario();
+    let usuarioLogado = false;
+    if(usuario!=null){
+        usuarioLogado = true;
+    }
 
     switch(tipoConteudo){
         case "serie":
             document.querySelector("#painel-series-pai").style.display = "block";
             document.querySelector("#painel-series").innerHTML = "";
-            dados.forEach(dado => { configuraDiv(false,dado); });
+            dados.forEach(async dado => { await configuraDiv(false,dado,usuarioLogado); });
         break;
         case "filme":
             document.querySelector("#painel-filmes-pai").style.display = "block";
             document.querySelector("#painel-filmes").innerHTML = "";
-            dados.forEach(dado => { configuraDiv(true,dado); });
+            dados.forEach(async dado => { await configuraDiv(true,dado,usuarioLogado); });
         break;
         default:exibirErro();break;
     }
@@ -114,7 +127,7 @@ async function buscaConteudo(){
                 dados = await busca(rota_filmes_busca);
             }
 
-            configuraPainel("filme",dados);
+            await configuraPainel("filme",dados);
 
     }
     
@@ -126,7 +139,7 @@ async function buscaConteudo(){
                 dados = await busca(rota_series_busca);
             }
 
-            configuraPainel("serie",dados);
+            await configuraPainel("serie",dados);
         
     }
 
@@ -137,7 +150,7 @@ async function buscaConteudo(){
 
 
 // Função que cria uma DIV para filme/série e acrescenta como filho do elemento da página responsável por exibir os filmes ou séries (chamamos de painéis).
-async function configuraDiv(tipoFilme,filme){
+async function configuraDiv(tipoFilme,filme,usuarioLogado){
     
     let filmeDiv = document.createElement("div");
     filmeDiv.className = "filme-div p-3 container m-3";
@@ -149,58 +162,59 @@ async function configuraDiv(tipoFilme,filme){
 
 
 
-    //Indicador de favorito (se for) e avaliado (se for)
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center'>";
-    filmeDiv.innerHTML += "<img class='img-favorito' src='assets/favorito.png' {hidden_favorito} >";
-    filmeDiv.innerHTML += "<img class='img-favorito' src='assets/avaliado.png' {hidden_avaliado} >";
-    filmeDiv.innerHTML += "</div>";
+    //Indicador de favorito (se for) e avaliado (se for), se usuário estiver logado
+    if(usuarioLogado){
 
+      
+        let divIndicadores = document.createElement("div");
+        divIndicadores.id = 'painelIndicadores';
+        divIndicadores.className ='d-flex justify-content-center';
+        
 
-
-
-
-
-
-let url = rota_favoritos+"/"+filme["id"]+"?tipo=serie";
-    if(tipoFilme){
-        url = rota_favoritos+"/"+filme["id"]+"?tipo=filme";
-    }
-    let response = await fetch(url,{
-            method:"GET",
-            credentials:"include",
-            headers: { "Content-Type": "application/json" },
-    });
-
-    if(response.status==200){
-        let dados = await response.json();
-        console.log(dados);
-        if(dados["favorito"]){
-            filmeDiv.innerHTML = filmeDiv.innerHTML.replace("{hidden_favorito}","");
-        }else{
-            filmeDiv.innerHTML = filmeDiv.innerHTML.replace("{hidden_favorito}","hidden");
+        let url = rota_favoritos+"/"+filme["id"]+"?tipo=serie";
+        if(tipoFilme){
+            url = rota_favoritos+"/"+filme["id"]+"?tipo=filme";
         }
-    }
+        let response = await fetch(url,{
+                method:"GET",
+                credentials:"include",
+                headers: { "Content-Type": "application/json" },
+        });
 
-    url = rota_avaliacoes+"/"+filme["id"]+"?tipo=serie";
-    if(tipoFilme){
-        url = rota_avaliacoes+"/"+filme["id"]+"?tipo=filme";
-    }
-    response = await fetch(url,{
-            method:"GET",
-            credentials:"include",
-            headers: { "Content-Type": "application/json" },
-    });
-
-    if(response.status==200){
-        let dados = await response.json();
-        console.log(dados);
-        if(dados.length>0){
-            filmeDiv.innerHTML = filmeDiv.innerHTML.replace("{hidden_avaliado}","");
-        }else{
-            filmeDiv.innerHTML = filmeDiv.innerHTML.replace("{hidden_avaliado}","hidden");
+        if(response.status==200){
+            let dados = await response.json();
+            console.log(dados);
+            if(dados["favorito"]){
+                        
+                let indicador = document.createElement("img");
+                indicador.className = "img-favorito";
+                indicador.src = 'assets/favorito.png';
+                divIndicadores.appendChild(indicador);
+            }
         }
-    }
 
+        url = rota_avaliacoes+"/"+filme["id"]+"?tipo=serie";
+        if(tipoFilme){
+            url = rota_avaliacoes+"/"+filme["id"]+"?tipo=filme";
+        }
+        response = await fetch(url,{
+                method:"GET",
+                credentials:"include",
+                headers: { "Content-Type": "application/json" },
+        });
+
+        if(response.status==200){
+            let dados = await response.json();
+            console.log(dados);
+            if(dados.length>0){
+                let indicador2 = document.createElement("img");
+                indicador2.className = "img-avaliado";
+                indicador2.src = 'assets/avaliado.png';
+                divIndicadores.appendChild(indicador2);
+            }
+        }
+        filmeDiv.appendChild(divIndicadores);
+    }
 
 
 

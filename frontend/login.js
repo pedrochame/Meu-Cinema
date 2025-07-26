@@ -45,6 +45,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     if(usuario != null){
         redireciona(caminho_tela_perfil);
     }
+
+    // Ao clicar no link da página de cadastro, redirecionar
+    document.querySelector("#linkCadastro").addEventListener("click",()=>{
+        redireciona(caminho_tela_cadastro);
+    });
+
+
     exibirPagina();
 });
 

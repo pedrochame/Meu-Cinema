@@ -62,7 +62,7 @@ def cadastro():
     if usuarioController.criaUsuario(nome,senha):
         return jsonify({"Mensagem":"Usuário cadastrado."}),201
     else:
-        return jsonify({"Mensagem":"Falha ao cadastrar usuário."}),400
+        return jsonify({"Mensagem":"Falha ao cadastrar usuário. Tente com outro nome."}),400
 
 # Rota para logar o usuário
 @app.route("/login",methods=["POST"])
@@ -89,16 +89,19 @@ def logout():
 
 # Rota para retornar os dados do usuário
 @app.route("/usuario", methods=["GET"])
-@login_required
+#@login_required
 def usuario():
-    nome = usuarioController.retornaUsuarioNome(current_user.id)
-    return jsonify({"ID": current_user.id,"Nome": nome}),200
-
+    try:
+        nome = usuarioController.retornaUsuarioNome(current_user.id)
+        return jsonify({"ID": current_user.id,"Nome": nome}),200
+    except:
+        return jsonify({"Mensagem": "Usuário não autenticado."}),401
+    
 
 
 # Rota para retornar países (requisitando API TMDB)
 @app.route("/paises",methods=["GET"])
-@login_required
+#@login_required
 def paises():
     url = "https://api.themoviedb.org/3/configuration/countries"
     params = {
@@ -129,7 +132,7 @@ def paises():
 
 # Rota para retornar gêneros de filmes (requisitando API TMDB)
 @app.route("/filmes_generos",methods=["GET"])
-@login_required
+#@login_required
 def filmes_generos():
     url = "https://api.themoviedb.org/3/genre/movie/list"
     params = {
@@ -146,7 +149,7 @@ def filmes_generos():
 
 # Rota para retornar gêneros de séries (requisitando API TMDB)
 @app.route("/series_generos",methods=["GET"])
-@login_required
+#@login_required
 def series_generos():
     url = "https://api.themoviedb.org/3/genre/tv/list"
     params = {
@@ -163,7 +166,7 @@ def series_generos():
 
 # Rota para retornar filmes mais bem avaliados (requisitando API TMDB)
 @app.route("/filmes",methods=["GET"])
-@login_required
+#@login_required
 def filmes():
 
     url = "https://api.themoviedb.org/3/movie/top_rated"
@@ -180,7 +183,7 @@ def filmes():
 
 # Rota para retornar séries mais bem avaliadas (requisitando API TMDB)
 @app.route("/series",methods=["GET"])
-@login_required
+#@login_required
 def series():
     url = "https://api.themoviedb.org/3/tv/top_rated"
     params = {
@@ -198,7 +201,7 @@ def series():
 
 # Rota para retornar filmes buscados (requisitando API TMDB)
 @app.route("/filmes_busca",methods=["GET"])
-@login_required
+#@login_required
 def filmes_busca():
 
     if set(request.args.keys()) != set(["termoBusca","generoBusca","paisBusca"]):
@@ -263,7 +266,7 @@ def filmes_busca():
 
 # Rota para retornar séries buscadas (requisitando API TMDB)
 @app.route("/series_busca",methods=["GET"])
-@login_required
+#@login_required
 def series_busca():
 
     if set(request.args.keys()) != set(["termoBusca","generoBusca","paisBusca"]):
@@ -318,7 +321,7 @@ def series_busca():
 
 # Rota para retornar um filme específico (requisitando API TMDB)
 @app.route("/filmes/<string:id>",methods=["GET"])
-@login_required
+#@login_required
 def getFilme(id):
 
     url = "https://api.themoviedb.org/3/movie/"+id
@@ -356,7 +359,7 @@ def getFilme(id):
 
 # Rota para retornar uma série específica (requisitando API TMDB)
 @app.route("/series/<string:id>",methods=["GET"])
-@login_required
+#@login_required
 def getSerie(id):
 
     url = "https://api.themoviedb.org/3/tv/"+id
@@ -513,7 +516,7 @@ def buscaFavoritos():
 
 # Rota para buscar provedores de filme ou série (requisitando API TMDB)
 @app.route("/provedores/<string:tipo>/<string:id>",methods=["GET"])
-@login_required
+#@login_required
 def provedores(tipo,id):
 
     if tipo == "filme": urlTipo = "movie"

@@ -19,17 +19,27 @@ let ehAvaliado = false;
 let idAvaliacao = 0;
 let painelAvaliacao = document.querySelector("#painelAvaliacao");
 
+// 26.07.25 -> Variável para indicar se o usuário está ou não logado
+let usuarioLogado = false;
+
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos a função que se comunicará com o back-end buscando o determinado filme/série e a função que irá preencher os dados na tela com as informações obtidas.
 document.addEventListener("DOMContentLoaded", async () => {
     esconderPagina();
     let usuario = await buscaUsuario();
-    if(usuario == null){
-        redireciona(caminho_tela_login);
+    if(usuario!=null){
+        usuarioLogado = true;
     }else{
+        usuarioLogado = false;
+    }
+    //if(usuario == null){
+       // redireciona(caminho_tela_login);
+    //}else{
         let dados = await buscaFilmeSerie(id);
+
         await configBtFavorito();
+
         configPagina(dados);
 
         //Configurando provedores
@@ -39,41 +49,57 @@ document.addEventListener("DOMContentLoaded", async () => {
         //Configurando painel de avaliação
         await configAvaliacao();
 
-    }
+    //}
     exibirPagina();
 });
 
 // Função que configura a DIV responsável pela exibição da avaliação feita pelo usuário
 async function configAvaliacao(){
-    let dados = await verificaAvaliacao();
     
-    if(dados == null){
-        ehAvaliado = false;
-        document.querySelector("#divRemoverAvaliacao").style.display="none";
-    }
+    let dados = await verificaAvaliacao();
 
-    if(dados!=null){
-        idAvaliacao = dados['id'];
-        notaAvaliacao = dados['nota'];
-        dataAvaliacao = dados['data'];
-        ehAvaliado = true;
+    if(dados != -1){
 
-        for(let i = 1 ; i <= notaAvaliacao; i++){
-            document.querySelector("#estrela"+i).src = 'assets/estrela1.png';
+        //26.07.25 -> Resetando estrelas de avaliação
+        for(let i = 1; i<=5;i++){
+            document.querySelector("#estrela"+i).src = 'assets/estrela0.png';
         }
 
 
+        if(dados == null){
 
-        document.querySelector("#dataAvaliacao").textContent = "Avaliado em "+ converteData(dataAvaliacao);
-    
+            ehAvaliado = false;
+            document.querySelector("#divRemoverAvaliacao").style.display="none";
+
+            //26.07.25 -> Como não há avaliação, trocar texto da data para 'Não avaliado'
+            document.querySelector("#dataAvaliacao").textContent = "Não avaliado";
+
+        }else{
+
+            idAvaliacao = dados['id'];
+            notaAvaliacao = dados['nota'];
+            dataAvaliacao = dados['data'];
+            ehAvaliado = true;
+            document.querySelector("#divRemoverAvaliacao").style.display="block";
+
+            for(let i = 1 ; i <= notaAvaliacao; i++){
+                document.querySelector("#estrela"+i).src = 'assets/estrela1.png';
+            }
+
+            document.querySelector("#dataAvaliacao").textContent = "Avaliado em "+ converteData(dataAvaliacao);
         
+        }
+
+        liberarAvaliacao();
+    
+    }else{
+
+        // Usuário não autenticado
+        document.querySelector("#painelAvaliacao").innerHTML = "";//"<p>Faça login para avaliar esse título!</p>";
+
     }
 
-    liberarAvaliacao();
-    
 }
-
-
 
 //Se o filme/série não tiver sido avaliado, ao passar o mouse sobre as estrelas, elas mudam de cor, indicando a nota que o usuário está dando.
 function liberarAvaliacao(){
@@ -81,40 +107,42 @@ function liberarAvaliacao(){
     for(let i = 1; i<=5;i++){
 
         document.querySelector("#estrela"+i).addEventListener("mouseover", ()=>{
-                for(let j = 1; j<= i; j++){
-                        document.querySelector("#estrela"+j).src = 'assets/estrela1.png';
-                }    
+            for(let j = 1; j<= i; j++){
+                document.querySelector("#estrela"+j).src = 'assets/estrela1.png';
+            }    
         });
 
         document.querySelector("#estrela"+i).addEventListener("mouseout", ()=>{
                 
-                if(ehAvaliado){
-                    for(let j = 1; j<= notaAvaliacao; j++){
-                        document.querySelector("#estrela"+j).src = 'assets/estrela1.png';
-                    }
-                    for(let j = notaAvaliacao+1; j<= 5; j++){
-                        document.querySelector("#estrela"+j).src = 'assets/estrela0.png';
-                    }
-                }else{
-                    for(let j = 1; j<= i; j++){
-                        document.querySelector("#estrela"+j).src = 'assets/estrela0.png';
-                    }    
+            if(ehAvaliado){
+                for(let j = 1; j<= notaAvaliacao; j++){
+                    document.querySelector("#estrela"+j).src = 'assets/estrela1.png';
                 }
-        }); 
-        
-            
-        document.querySelector("#estrela"+i).addEventListener("click",()=>{
-                console.log("nota do usuario: " + i);
-                enviarAvaliacao(i);
+                for(let j = notaAvaliacao+1; j<= 5; j++){
+                    document.querySelector("#estrela"+j).src = 'assets/estrela0.png';
+                }
+            }else{
+                for(let j = 1; j<= i; j++){
+                    document.querySelector("#estrela"+j).src = 'assets/estrela0.png';
+                }    
+            }
         });
     
     }
 
 }
 
+// 26.07.25 -> Ao clicar numa estrela, a respectiva nota é enviada na rota de avaliações no back-end
+for(let i=1;i<=5;i++){
+    document.querySelector("#estrela"+i).addEventListener("click", ()=>{
+        //console.log("NOTA ENVIADA = "+i);
+        enviarAvaliacao(i);
+    });
+}
+
+
 //Função que faz requisição na rota de inclusão de avaliação
 async function enviarAvaliacao(nota) {
-    
     
     let response = null;
 
@@ -148,8 +176,11 @@ async function enviarAvaliacao(nota) {
         let dados = await response.json();
         console.log(dados);
         if(response.status==200){
-            console.log("Avaliação feita com sucesso!");
-            await verificaAvaliacao();
+            //console.log("Avaliação feita com sucesso!");
+            await configAvaliacao();
+        }else{
+            //console.log("Falha ao registrar avaliação.");
+            await configAvaliacao();
         }
     }
 }
@@ -164,17 +195,19 @@ async function verificaAvaliacao(){
     switch(response.status){
         
         case 401: 
-            redireciona(caminho_tela_login);
+            //redireciona(caminho_tela_login);
+            console.log("Usuário não autenticado.");
+            return -1;
         break;
         
         case 200:
             let dados = await response.json();
             if(dados.length >0){
-                console.log("o item foi avaliado pelo usuário");
-                console.log(dados);
+                console.log("Item avaliado.");
+                //console.log(dados);
                 return dados[0];
             }else{
-                console.log("o item NÃO foi avaliado pelo usuário");
+                console.log("Item não avaliado.");
                 return null;
             }
         break;
@@ -332,19 +365,20 @@ async function configBtFavorito(){
     switch(response.status){
         
         case 401: 
-            redireciona(caminho_tela_login);
+                console.log("Usuário não autenticado.");
+                btFavorito.style.display = "none";
         break;
         
         case 200:
             let dados = await response.json();
             if(dados["favorito"]){
-                console.log("o item é favorito do usuário");
+                console.log("Item é favorito.");
                 btFavorito.value = "Remover dos favoritos";
                 //btFavorito.className += "btn-danger";
                 btFavorito.className = btFavorito.className.replace("btn-success","btn-danger");
                 ehFavorito = true;
             }else{
-                console.log("o item NÃO É favorito do usuário");
+                console.log("Item não é favorito.");
                 btFavorito.value = "Adicionar aos favoritos";
                 //btFavorito.className += "btn-success";
                 btFavorito.className = btFavorito.className.replace("btn-danger","btn-success");

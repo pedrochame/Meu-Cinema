@@ -18,15 +18,15 @@ class usuarioController():
     def buscaUsuario(self,nome,senha):
         resp = self.repo.buscaUsuario(nome,senha)
         if resp == -1:
-            print("Usuário com nome = "+nome+" e senha = "+senha+" não encontrado.")
+            print("Usuário "+nome+" não encontrado.")
         else:
-            print("Usuário com nome = "+nome+" e senha = "+senha+" encontrado.")
+            print("Usuário "+nome+" encontrado.")
         return resp
     
     def criaUsuario(self,nome,senha):
         resp = self.repo.criaUsuario(nome,senha)
         if resp == False:
-            print("Usuário com nome = "+nome+" e senha = "+senha+" não cadastrado.")
+            print("Usuário "+nome+" e não cadastrado.")
         else:
-            print("Usuário com nome = "+nome+" e senha = "+senha+" cadastrado.")
+            print("Usuário "+nome+" cadastrado.")
         return resp
