@@ -86,8 +86,11 @@ function exibirPagina(){
     // O atalho no cabeçalho para a página em que o usuário está fica em cor diferente
     let pagAtual = window.location.pathname.split("/")[(window.location.pathname.split("/").length-1)];
     pagAtual = pagAtual.replace(".html","");
-    console.log(pagAtual);
-    document.querySelector("#atalho_"+pagAtual).style.color = "gold";
+    //console.log(pagAtual);
+    let elementoAtalhoPagAtual = document.querySelector("#atalho_"+pagAtual);
+    if(elementoAtalhoPagAtual){
+       elementoAtalhoPagAtual.style.color = "gold";
+    }
 
 
     // Exibindo div de conteúdo
