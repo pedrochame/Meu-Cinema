@@ -190,7 +190,7 @@ async function esconderPagina(){
     if(document.querySelector("#divFooter") == null){
         let footer = document.createElement("div");
         footer.id = "divFooter";
-        footer.innerHTML = "<div class='container'><div class='row'><div class='col-12 text-center'><p>Desenvolvido por <b>Pedro Chame</b></p></div></div><div class='row'><div class='col-12 text-center'><a class=' m-4' target='_blank' href='https://www.github.com/pedrochame'><img class='img-fluid' id='icone-github' src='assets/github1.png'/></a><a class='m-4' target='_blank' href='https://www.linkedin.com/in/pedrochame'><img class='img-fluid' id='icone-linkedin' src='assets/linkedin1.png'/></a></div></div></div>";
+        footer.innerHTML = "<div class='container'><div class='row'><div class='col-12 text-center'><p>Fonte de Informações: <b>The Movie Database</b> e <b>JustWatch</b></p><p>Desenvolvido por <b>Pedro Chame</b></p></div></div></div><div class='row'><div class='col-12 text-center'><a class=' m-4' target='_blank' href='https://www.github.com/pedrochame'><img class='img-fluid' id='icone-github' src='assets/github1.png'/></a><a class='m-4' target='_blank' href='https://www.linkedin.com/in/pedrochame'><img class='img-fluid' id='icone-linkedin' src='assets/linkedin1.png'/></a></div></div></div>";
         
         document.body.appendChild(footer);
     }
