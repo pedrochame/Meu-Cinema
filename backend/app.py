@@ -577,8 +577,8 @@ def provedores(tipo,id):
                 })
 
         if "buy" in resultado["results"]["BR"]:
-
-            provedores["comprar"].append({
+            for i in resultado["results"]["BR"]["buy"]:
+                provedores["comprar"].append({
                 "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
                 "nome":i["provider_name"],
                 "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
@@ -586,8 +586,8 @@ def provedores(tipo,id):
             })
 
         if "rent" in resultado["results"]["BR"]:
-
-            provedores["alugar"].append({
+            for i in resultado["results"]["BR"]["rent"]:
+                provedores["alugar"].append({
                 "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
                 "nome":i["provider_name"],
                 "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
