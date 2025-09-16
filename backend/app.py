@@ -204,12 +204,15 @@ def series():
 #@login_required
 def filmes_busca():
 
-    if set(request.args.keys()) != set(["termoBusca","generoBusca","paisBusca"]):
-        return jsonify({"Mensagem":"Os campos devem ser somente termoBusca, generoBusca e paisBusca."}),400
+    if set(request.args.keys()) != set(["termoBusca","generoBusca","paisBusca","anoBusca"]):
+        return jsonify({"Mensagem":"Os campos devem ser somente termoBusca, generoBusca, paisBusca e #anoBusca."}),400
 
     generoBusca = request.args.get("generoBusca")
     termoBusca = request.args.get("termoBusca")
     paisBusca = request.args.get("paisBusca")
+
+    # Busca por ano
+    anoBusca = request.args.get("anoBusca")
 
     if termoBusca == "":
 
@@ -222,10 +225,16 @@ def filmes_busca():
             "page": 1,
             "with_genres" : generoBusca,
             "with_origin_country" : paisBusca,
+
+            # Data de Lançamento (a partir de 01 de janeiro do ano selecionado)
+            "primary_release_date.gte" : anoBusca+"-01-01",
+
+            # Data de Lançamento (até 31 de dezembro do ano selecionado)
+            "primary_release_date.lte" : anoBusca+"-12-31",
         }
     
         resp = requests.get(url, params=params)
-        if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter filmes por gênero/país da API do TMDB."}),502
+        if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter filmes por gênero/país/ano da API do TMDB."}),502
         return jsonify(resp.json()["results"]),200
 
     else:
@@ -237,10 +246,25 @@ def filmes_busca():
                 "api_key": os.getenv("CHAVE_API_TMDB"),
                 "language": "pt-BR",
                 "page": 1,
-                "query" : termoBusca
+                "query" : termoBusca,
         }
+
+
+        # Caso haja parâmetro de ano, alterar dicionário de parâmetros
+        if anoBusca != "":
+            params = {
+                "api_key": os.getenv("CHAVE_API_TMDB"),
+                "language": "pt-BR",
+                "page": 1,
+                "query" : termoBusca,
+                "primary_release_year" : anoBusca,
+            }
+
+
+
+
         resp = requests.get(url, params=params)
-        if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter filmes por nome da API do TMDB."}),502
+        if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter filmes por nome/ano da API do TMDB."}),502
         
         filmes = []
         
@@ -269,12 +293,13 @@ def filmes_busca():
 #@login_required
 def series_busca():
 
-    if set(request.args.keys()) != set(["termoBusca","generoBusca","paisBusca"]):
-        return jsonify({"Mensagem":"Os campos devem ser somente termoBusca, generoBusca e paisBusca."}),400
+    if set(request.args.keys()) != set(["termoBusca","generoBusca","paisBusca","anoBusca"]):
+        return jsonify({"Mensagem":"Os campos devem ser somente termoBusca, generoBusca, paisBusca e anoBusca."}),400
 
     generoBusca = request.args.get("generoBusca")
     termoBusca = request.args.get("termoBusca")
     paisBusca = request.args.get("paisBusca")
+    anoBusca = request.args.get("anoBusca")
 
     if termoBusca == "":
 
@@ -287,6 +312,13 @@ def series_busca():
             "page": 1,
             "with_genres" : generoBusca,
             "with_origin_country" : paisBusca,
+
+            
+            # Data de Lançamento do primeiro episódio (a partir de 01 de janeiro do ano selecionado)
+            "first_air_date.gte" : anoBusca+"-01-01",
+
+            # Data de Lançamento do primeiro episódio (até 31 de dezembro do ano selecionado)
+            "first_air_date.lte" : anoBusca+"-12-31",
         }
     
         resp = requests.get(url, params=params)
@@ -306,6 +338,19 @@ def series_busca():
                 "page": 1,
                 "query" : termoBusca
         }
+
+
+        # Caso haja parâmetro de ano, alterar dicionário de parâmetros
+        if anoBusca != "":
+            params = {
+                "api_key": os.getenv("CHAVE_API_TMDB"),
+                "language": "pt-BR",
+                "page": 1,
+                "query" : termoBusca,
+                "first_air_date_year" : anoBusca,
+            }
+
+
         resp = requests.get(url, params=params)
         if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter séries por nome da API do TMDB."}),502
         

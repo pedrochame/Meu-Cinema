@@ -5,6 +5,7 @@ let campoTermo = document.querySelector("#campoTermo");
 let campoGenero = document.querySelector("#campoGenero");
 let campoPais = document.querySelector("#campoPais");
 let campoTipo = document.querySelector("#campoTipo"); // 30.05.25:Campo para filtrar por filme,serie ou tudo
+let campoAno = document.querySelector("#campoAno"); // 16.09.25: Campo para filtrar por ano
 let btBuscar = document.querySelector("#btBuscar");
 
 // Assim que a página é carregada, é verificado se o usuário está logado.
@@ -25,6 +26,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     */
     await generos();
     await paises();
+
+    await anos() // Função que adiciona as opções de anos no campo de busca 
 
 
 
@@ -79,6 +82,7 @@ async function busca(rota){
         .replace("{generoBusca}",campoGenero.value)
         .replace("{termoBusca}",campoTermo.value)
         .replace("{paisBusca}", campoPais.value)
+        .replace("{anoBusca}", campoAno.value)
         
         ,{
             method:"GET",
@@ -121,7 +125,7 @@ async function buscaConteudo(){
 
     if(campoTipo.value == "filme" || campoTipo.value == "tudo"){
         
-            if(campoGenero.value == "" && campoTermo.value == "" && campoPais.value == ""){
+            if(campoGenero.value == "" && campoTermo.value == "" && campoPais.value == "" && campoAno.value == ""){
                 dados = await busca(rota_filmes);
             }else{
                 dados = await busca(rota_filmes_busca);
@@ -133,7 +137,7 @@ async function buscaConteudo(){
     
     if(campoTipo.value == "serie" || campoTipo.value == "tudo"){
         
-            if(campoGenero.value == "" && campoTermo.value == "" && campoPais.value == ""){
+            if(campoGenero.value == "" && campoTermo.value == "" && campoPais.value == "" && campoAno.value == ""){
                 dados = await busca(rota_series);
             }else{
                 dados = await busca(rota_series_busca);
@@ -351,5 +355,25 @@ async function generos(){
     let dadosSeries = await responseSeries.json();
     
     configuraCampoGenero(dadosFilmes,dadosSeries);
+
+}
+
+// Função para adicionar opções de anos para busca
+async function anos(){
+
+    let anosOp = [];
+
+    const anoAtual = new Date().getFullYear();
+    
+    for(let i=anoAtual; i>= 1874; i--){
+        anosOp.push(i);
+    }
+
+    anosOp.forEach(ano => {
+        let op = document.createElement("option");
+        op.label = ano;
+        op.value = ano;
+        campoAno.appendChild(op);
+    });
 
 }

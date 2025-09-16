@@ -20,6 +20,7 @@
 
         <div id="painel-buscar" class="gap-3 d-flex flex-wrap text-center m-4 ">
 
+                <!-- Tipo -->
                 <div class="container col-lg-6 col-md-8 col-sm-10">
                     <b>Tipo de Conteúdo:</b>
                     <select class="form-control" type="search" id="campoTipo">
@@ -29,12 +30,13 @@
                     </select>
                 </div>
             
-            
+                <!-- Termo -->
                 <div class="container col-lg-6 col-md-8 col-sm-10">
                     <b>Título:</b>
                     <input class="form-control" type="search" placeholder="Digite um termo" id="campoTermo">
                 </div>
                 
+                <!-- Gênero -->
                 <div class="container col-lg-6 col-md-8 col-sm-10">
                     <b>Gênero:</b>
                     <select class="form-control" id="campoGenero" >
@@ -42,9 +44,18 @@
                     </select>
                 </div>
 
+                <!-- País -->
                 <div class="container col-lg-6 col-md-8 col-sm-10">
                     <b>País:</b>
                     <select class="form-control" id="campoPais" >
+                        <option label = "Qualquer" value = ""></option>
+                    </select>
+                </div>
+
+                <!-- Ano -->
+                <div class="container col-lg-6 col-md-8 col-sm-10">
+                    <b>Ano:</b>
+                    <select class="form-control" id="campoAno" >
                         <option label = "Qualquer" value = ""></option>
                     </select>
                 </div>

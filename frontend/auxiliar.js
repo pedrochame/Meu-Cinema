@@ -222,7 +222,7 @@ let rota_logout = dominio + "/logout";
 let rota_usuario = dominio + "/usuario";
 let rota_filmes = dominio + "/filmes";
 let rota_series = dominio + "/series";
-let camposBusca = "paisBusca={paisBusca}&termoBusca={termoBusca}&generoBusca={generoBusca}";
+let camposBusca = "paisBusca={paisBusca}&termoBusca={termoBusca}&generoBusca={generoBusca}&anoBusca={anoBusca}";
 let rota_series_busca = dominio + "/series_busca?"+camposBusca;
 let rota_filmes_busca = dominio + "/filmes_busca?"+camposBusca;
 let rota_filme = dominio + "/filmes/";
