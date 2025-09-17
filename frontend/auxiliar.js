@@ -1,3 +1,28 @@
+// 17.09.25 - Nas telas que aparecem os 'cards' de filmes/séries (index, favoritos e avaliados), ao passar o mouse sobre os ícones de favorito/avaliado, é exibida essa informação
+document.addEventListener("mouseover", (e) => {
+    let alvo = e.target;
+
+    // Caso o título do ícone já tenha sido definido, não definir novamente
+    if(alvo.title != ''){
+        return;
+    }
+
+    // Caso o mouse esteja sobre o ícone de avaliado, definir título
+    if(alvo.className == 'img-avaliado'){
+        alvo.title = 'Este título foi avaliado por você!';
+        console.log("titulo colocado");
+    }
+
+    // Caso o mouse esteja sobre o ícone de favorito, definir título
+    if(alvo.className == 'img-favorito'){
+        alvo.title = 'Este título é um dos seus favoritos!';
+        console.log("titulo colocado");
+    }
+
+});
+
+
+
 // Função que recebe uma lista de dicionários e a devolve ordenada de acordo com um parâmetro
 function ordenaDicionario(lista, param){
     let l = [];

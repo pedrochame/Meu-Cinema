@@ -61,9 +61,11 @@
 }
 
 body{
-    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif
-}
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 
+    /* 17.09.25 - Escondendo pequena 'sobra' de tela horizontal */
+    overflow-x: hidden;
+}
 
 #divFooter{
     margin-top: 20px;
@@ -152,7 +154,7 @@ body{
     cursor:pointer;
 }
 
-/* Coração nas DIVs de filme/série que indicam que é um favorito e avaliado */
+/* Coração/Estrela nas DIVs de filme/série que indicam que é um favorito e/ou avaliado */
 .img-favorito,.img-avaliado{
     width: 30px;
 }
