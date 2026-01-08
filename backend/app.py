@@ -387,12 +387,12 @@ def getFilme(id):
     
     dados = resposta.json()
     filme = {
-        "nome":dados["title"],
-        "data": dados["release_date"].split("-")[0],
+        "nome":str(dados["title"]),
+        "data": str(dados["release_date"].split("-")[0]),
         "duracao":str(dados["runtime"])+" min",
-        "capa":"https://image.tmdb.org/t/p/w300" + dados["poster_path"],
-        "wallpaper":"https://image.tmdb.org/t/p/w1280"+dados["backdrop_path"],
-        "sinopse":dados["overview"],
+        "capa":"https://image.tmdb.org/t/p/w300" + str(dados["poster_path"]),
+        "wallpaper":"https://image.tmdb.org/t/p/w1280"+str(dados["backdrop_path"]),
+        "sinopse":str(dados["overview"]),
     }
     
     generos = ""
