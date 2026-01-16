@@ -390,8 +390,8 @@ def getFilme(id):
         "nome":str(dados["title"]),
         "data": str(dados["release_date"].split("-")[0]),
         "duracao":str(dados["runtime"])+" min",
-        "capa":"https://image.tmdb.org/t/p/w300" + str(dados["poster_path"]),
-        "wallpaper":"https://image.tmdb.org/t/p/w1280"+str(dados["backdrop_path"]),
+        "capa":"https://image.tmdb.org/t/p/w500" + str(dados["poster_path"]),
+        "wallpaper":"https://image.tmdb.org/t/p/w1920"+str(dados["backdrop_path"]),
         "sinopse":str(dados["overview"]),
     }
     
@@ -428,8 +428,8 @@ def getSerie(id):
         "nome":dados["name"],
         "temporadas":dados["number_of_seasons"],
         "episodios":dados["number_of_episodes"],
-        "capa":"https://image.tmdb.org/t/p/w300" + dados["poster_path"],
-        "wallpaper":"https://image.tmdb.org/t/p/w1280"+dados["backdrop_path"],
+        "capa":"https://image.tmdb.org/t/p/w500" + dados["poster_path"],
+        "wallpaper":"https://image.tmdb.org/t/p/w1920"+dados["backdrop_path"],
         "sinopse":dados["overview"],
     }
 
@@ -526,7 +526,7 @@ def buscaFavoritos():
 
             dados = resposta.json()
             favoritos_json["filme"].append({
-                    "img" :"https://image.tmdb.org/t/p/w300"+dados["poster_path"],
+                    "img" :"https://image.tmdb.org/t/p/w500"+dados["poster_path"],
                     "nome":dados["title"],
                     "data":dados["release_date"],
                     "id":dados["id"],
@@ -545,7 +545,7 @@ def buscaFavoritos():
 
             dados = resposta.json()
             favoritos_json["serie"].append({
-                    "img" :"https://image.tmdb.org/t/p/w300"+dados["poster_path"],
+                    "img" :"https://image.tmdb.org/t/p/w500"+dados["poster_path"],
                     "nome":dados["name"],
                     "data":dados["first_air_date"],
                     "id":dados["id"],
@@ -595,7 +595,7 @@ def provedores(tipo,id):
             for i in resultado["results"]["BR"]["free"]:
 
                 provedores["gratuito"].append({
-                    "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
+                    "img" :"https://image.tmdb.org/t/p/w500"+i["logo_path"],
                     "nome":i["provider_name"],
                     "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                     "provedor_id":i["provider_id"]
@@ -605,7 +605,7 @@ def provedores(tipo,id):
             for i in resultado["results"]["BR"]["ads"]:
 
                 provedores["anuncios"].append({
-                    "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
+                    "img" :"https://image.tmdb.org/t/p/w500"+i["logo_path"],
                     "nome":i["provider_name"],
                     "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                     "provedor_id":i["provider_id"]
@@ -615,7 +615,7 @@ def provedores(tipo,id):
             for i in resultado["results"]["BR"]["flatrate"]:
 
                 provedores["incluso"].append({
-                    "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
+                    "img" :"https://image.tmdb.org/t/p/w500"+i["logo_path"],
                     "nome":i["provider_name"],
                     "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                     "provedor_id":i["provider_id"]
@@ -624,7 +624,7 @@ def provedores(tipo,id):
         if "buy" in resultado["results"]["BR"]:
             for i in resultado["results"]["BR"]["buy"]:
                 provedores["comprar"].append({
-                "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
+                "img" :"https://image.tmdb.org/t/p/w500"+i["logo_path"],
                 "nome":i["provider_name"],
                 "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                 "provedor_id":i["provider_id"]
@@ -633,7 +633,7 @@ def provedores(tipo,id):
         if "rent" in resultado["results"]["BR"]:
             for i in resultado["results"]["BR"]["rent"]:
                 provedores["alugar"].append({
-                "img" :"https://image.tmdb.org/t/p/w300"+i["logo_path"],
+                "img" :"https://image.tmdb.org/t/p/w500"+i["logo_path"],
                 "nome":i["provider_name"],
                 "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
                 "provedor_id":i["provider_id"]
@@ -749,7 +749,7 @@ def buscaAvaliacoes():
             avaliados_json["filme"].append({
                 "id": dados["id"],
                 "nome":dados["title"],
-                "img" :"https://image.tmdb.org/t/p/w300"+dados["poster_path"],
+                "img" :"https://image.tmdb.org/t/p/w500"+dados["poster_path"],
                 "nota":avaliado["nota"],
                 "data":avaliado["data"],
                 "tipo":avaliado["tipo"],
@@ -766,7 +766,7 @@ def buscaAvaliacoes():
             avaliados_json["serie"].append({
                 "id": dados["id"],
                 "nome":dados["name"],
-                "img" :"https://image.tmdb.org/t/p/w300"+dados["poster_path"],
+                "img" :"https://image.tmdb.org/t/p/w500"+dados["poster_path"],
                 "nota":avaliado["nota"],
                 "data":avaliado["data"],
                 "tipo":avaliado["tipo"],

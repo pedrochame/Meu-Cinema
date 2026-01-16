@@ -350,5 +350,5 @@ let caminho_tela_avaliacoes = "avaliacoes.html"
 
 
 // Variáveis com os caminhos das imagens fornecidas pelo TMDB
-let caminho_tmdb_imagem_wallpaper="https://image.tmdb.org/t/p/w1280"
-let caminho_tmdb_imagem = "https://image.tmdb.org/t/p/w300"
+let caminho_tmdb_imagem_wallpaper="https://image.tmdb.org/t/p/w1920"
+let caminho_tmdb_imagem = "https://image.tmdb.org/t/p/w500"
