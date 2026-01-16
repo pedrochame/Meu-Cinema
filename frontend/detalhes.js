@@ -86,8 +86,11 @@ async function configAvaliacao(){
                 document.querySelector("#estrela"+i).src = 'assets/estrela1.png';
             }
 
+
+
             document.querySelector("#dataAvaliacao").textContent = "Avaliado em "+ converteData(dataAvaliacao);
-        
+
+
         }
 
         liberarAvaliacao();
@@ -134,9 +137,21 @@ function liberarAvaliacao(){
 
 // 26.07.25 -> Ao clicar numa estrela, a respectiva nota é enviada na rota de avaliações no back-end
 for(let i=1;i<=5;i++){
-    document.querySelector("#estrela"+i).addEventListener("click", ()=>{
+    document.querySelector("#estrela"+i).addEventListener("click", async ()=>{
+        
+
+        // Adicionando ícone de carregamento no lugar do painel de avaliação
+        adicionarCarregamento(painelAvaliacao);
+        
+        
         //console.log("NOTA ENVIADA = "+i);
-        enviarAvaliacao(i);
+        await enviarAvaliacao(i);
+
+
+
+        // Removendo ícone de carregamento
+        removerCarregamento(painelAvaliacao);
+
     });
 }
 
@@ -204,7 +219,7 @@ async function verificaAvaliacao(){
             let dados = await response.json();
             if(dados.length >0){
                 console.log("Item avaliado.");
-                //console.log(dados);
+                console.log(dados);
                 return dados[0];
             }else{
                 console.log("Item não avaliado.");
@@ -223,12 +238,19 @@ async function verificaAvaliacao(){
 // Se o filme/série tiver avaliação, o botão de remover avaliação estará disponível.
 // Se for clicado, deve se comunicar com o back-end na rota de deleção de avaliação.
 document.querySelector("#btRemoverAvaliacao").addEventListener("click", async () => {
-    let response = await fetch(rota_avaliacoes+"/"+id+"?filme_id="+id+"&tipo="+tipo,{
-                method:"DELETE",
-                credentials:"include",
-            });
 
-        await configAvaliacao();
+    // Adicionando ícone de carregamento no lugar do painel de avaliação
+    adicionarCarregamento(painelAvaliacao);
+
+    let response = await fetch(rota_avaliacoes+"/"+id+"?filme_id="+id+"&tipo="+tipo,{
+                                method:"DELETE",
+                                credentials:"include",
+    });
+
+    await configAvaliacao();
+
+    // Removendo ícone de carregamento
+    removerCarregamento(painelAvaliacao);
 
 });
 
@@ -328,9 +350,11 @@ async function configProvedores(){
 
 }
 
-
-
 btFavorito.addEventListener("click", async () => {
+
+
+    // Enquanto é feita a requisição ao back-end para incluir/remover favorito, o botão deve permanecer escondido, com o ícone de carregamento em seu lugar
+    adicionarCarregamento(btFavorito);
 
 
     if(ehFavorito == false){
@@ -351,6 +375,10 @@ btFavorito.addEventListener("click", async () => {
     }
 
     await configBtFavorito();
+
+
+    // Fim do carregamento
+    removerCarregamento(btFavorito);
 
 });
 

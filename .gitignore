@@ -4,3 +4,4 @@ backend/dao/__pycache__/
 backend/.env
 frontend/teste.html
 backend/__pycache__
+backend/bd.db

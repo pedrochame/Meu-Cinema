@@ -1,8 +1,9 @@
-import sqlite3,os
+import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+from dao.conexaoDB import retornaConexaoDB
 
-# Caminho para o arquivo do banco de dados
-bd_path = os.path.abspath(os.path.join(__file__, "../../bd.db"))
+# Caminho para o arquivo do banco de dados SQLite
+#bd_path = os.path.abspath(os.path.join(__file__, "../../bd.db"))
 
 class usuarioDAO():
 
@@ -11,18 +12,39 @@ class usuarioDAO():
 
     # Função que recebe um id e retorna o nome do usuário
     def retornaUsuarioNome(self,id):
-        conexao = sqlite3.connect(bd_path)
+
+        # Conexão com o banco de dados postgre, hospedado no Render
+        conexao = retornaConexaoDB()
+
+        # Conexão com o banco de dados SQLite
+        #conexao = sqlite3.connect(bd_path)
+
         cursor = conexao.cursor()
-        cursor.execute("select nome from usuario where id = ?",[id])
+        
+        # Query alterada de SQLite para PostgreSQL
+        #cursor.execute("select nome from usuario where id = ?",[id])
+        cursor.execute("select nome from usuario where id = %s",[id])
+        
         registro = cursor.fetchone()
         conexao.close()
         return registro[0]
 
     # Função que recebe um id e verifica se o usuário existe no banco
     def verificaUsuario(self,id):
-        conexao = sqlite3.connect(bd_path)
+        
+        # Conexão com o banco de dados postgre, hospedado no Render
+        conexao = retornaConexaoDB()
+
+        # Conexão com o banco de dados SQLite
+        #conexao = sqlite3.connect(bd_path)
+
         cursor = conexao.cursor()
-        cursor.execute("select * from usuario where id = ?",[id])
+        
+        # Query alterada de SQLite para PostgreSQL
+        #cursor.execute("select * from usuario where id = ?",[id])
+        cursor.execute("select * from usuario where id = %s",[id])
+
+
         registro = cursor.fetchone()
         conexao.close()
         if registro != None:
@@ -33,9 +55,20 @@ class usuarioDAO():
     # Função que recebe nome e senha, e busca o usuário no banco.
     # Se encontrar, retorna seu ID. Se não, retorna -1.
     def buscaUsuario(self,nome,senha):
-        conexao = sqlite3.connect(bd_path)
+        
+        # Conexão com o banco de dados postgre, hospedado no Render
+        conexao = retornaConexaoDB()
+
+        # Conexão com o banco de dados SQLite
+        #conexao = sqlite3.connect(bd_path)
+
+
         cursor = conexao.cursor()
-        cursor.execute("select id,senha from usuario where nome = ?",[nome])
+        
+        # Query alterada de SQLite para PostgreSQL
+        #cursor.execute("select id,senha from usuario where nome = ?",[nome])
+        cursor.execute("select id,senha from usuario where nome = %s",[nome])
+
         registro = cursor.fetchone()
         conexao.close()
         if registro != None:
@@ -53,10 +86,20 @@ class usuarioDAO():
         # Criptografando senha
         senha = generate_password_hash(senha)
 
-        conexao = sqlite3.connect(bd_path)
+        # Conexão com o banco de dados postgre, hospedado no Render
+        conexao = retornaConexaoDB()
+
+        # Conexão com o banco de dados SQLite
+        #conexao = sqlite3.connect(bd_path)
+
+
         cursor = conexao.cursor()
         try:
-            cursor.execute("insert into usuario(nome,senha) values (?,?)",[nome,senha])
+            
+            # Query alterada de SQLite para PostgreSQL
+            #cursor.execute("insert into usuario(nome,senha) values (?,?)",[nome,senha])
+            cursor.execute("insert into usuario(nome,senha) values (%s,%s)",[nome,senha])
+            
             conexao.commit()
             return True
         except:

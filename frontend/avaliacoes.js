@@ -61,7 +61,7 @@ async function configuraDiv(filme){
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center' id='divImg'><a href='detalhes.html?tipo="+filme["tipo"]+"&id="+filme["id"]+"'><img src="+filme['img']+" class='img-fluid'></a></div>";
     
     //Data
-    filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>Data:</b><p>"+converteData(filme["data"])+"</p></div>";
+    filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>Avaliado em:</b><p>"+converteData(filme["data"])+"</p></div>";
     
     //Nota da avaliação
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center gap-1'><b>Nota: </b><p>"+filme["nota"]+"</p></div>";

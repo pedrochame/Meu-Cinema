@@ -23,7 +23,7 @@ A aplicação permite pesquisar filmes e séries, visualizar detalhes, salvar fa
 ### Backend:
 - Python
 - Flask
-- SQLite
+- PostgreSQL
 
 ### Frontend:
 - HTML

@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await generos();
     await paises();
 
-    await anos() // Função que adiciona as opções de anos no campo de busca 
+    await anos(); // Função que adiciona as opções de anos no campo de busca 
 
 
 

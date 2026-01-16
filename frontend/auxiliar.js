@@ -50,23 +50,42 @@ function buscaElemento(lista, elemento){
     return false;
 }
 
-// Função que recebe uma string de data no formato yyyy-mm-dd e retorna no formato dd-mm-yyyy
+// Função que recebe uma string de data no padrão ISO 8601 e retorna no formato DD/MM/YYYY HH:MM
+/*
+    Exemplo:
+
+    Recebe: 2026-01-14T10:47:58Z
+    Retorna: 14/01/2026, 10:47:58
+
+*/
+
 function converteData(data){
     
     if(data == ""){
         return data;
     }
 
-    let dt = new Date();
-    dt.setUTCFullYear(data.split(" ")[0].split("-")[0],data.split(" ")[0].split("-")[1]-1,data.split(" ")[0].split("-")[2]);
-    
-    if(data.split(" ").length > 1){
-        dt.setUTCHours(data.split(" ")[1].split(":")[0],data.split(" ")[1].split(":")[1],data.split(" ")[1].split(":")[2]);
-        return dt.toLocaleString();
-    }else{
-        return dt.toLocaleDateString();
+    if(data.split("T").length == 1){
+        return data.split("-")[2]+"/"+data.split("-")[1]+"/"+data.split("-")[0];
     }
 
+
+    // Criando objeto Date
+    const dt = new Date(data);
+
+    // Formatando data
+    const options = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Fuso horário do usuário
+    };
+
+    return new Intl.DateTimeFormat("pt-BR", options).format(dt);
 
 }
 
@@ -74,6 +93,37 @@ function converteData(data){
 function getAno(data){
     return data.split("-")[0];
 }
+
+
+// Função que adiciona um ícone para indicar carregamento
+function adicionarCarregamento(elementoParaEsconder){
+
+    // Escondendo elemento
+    elementoParaEsconder.style.display = "none";
+
+    // Adicionar um pequeno gif para indicar carregamento
+    let divLoading = document.createElement("div");
+    divLoading.id = "divLoading";
+    divLoading.className = "col-12 text-center mb-4"
+    divLoading.innerHTML = "<img src='assets/loading.gif' width='48'></div>";
+    elementoParaEsconder.parentElement.appendChild(divLoading);
+
+}
+
+// Função que remove o ícone que indica carregamento
+function removerCarregamento(elementoParaExibir){
+
+    // Exibindo elemento (revertendo alteração de display)
+    elementoParaExibir.style.display = "revert";
+
+    // Removendo ícone de carregamento
+    const divLoading = elementoParaExibir.parentElement.querySelector("#divLoading");
+    if(divLoading != null){
+        elementoParaExibir.parentElement.removeChild(divLoading);
+    }
+
+}
+
 
 // Função que verifica se o usuário está logado no sistema
 async function buscaUsuario(){
@@ -156,24 +206,50 @@ function personalizaIconesFooter(){
 
 async function esconderPagina(){
 
-
-
     // Adicionando div de cabeçalho
     if(document.querySelector("#divHeader") == null){ 
         let header = document.createElement("div");
         header.id = "divHeader";
         
         let atalhos = [];
+
+
         // Se usuário está logado, todas as opções aparecem. Se não, somente de login e início
-        let usuario = await buscaUsuario();
+        let usuario = null;
+        
+        // Caso ocorra alguma exceção ao buscar os dados do usuário, é por conta do back-end não responder a requisição... então, exibir mensagem para que o usuário aguarde algum tempo para atualizar a página
+        
+        
+        
+        // Adicionando div de carregamento
+        if(document.querySelector("#divLoading") == null){
+
+            let loading = document.createElement("div");
+            loading.id = "divLoading";
+            loading.className = "flex-fill container";
+            loading.innerHTML = "<div class='row'><div class='col-12 text-center mt-5 mb-5 '><img src='assets/loading.gif'></div></div></div>";
+            document.body.appendChild(loading);
+
+        }
+
+
+        try {
+            usuario = await buscaUsuario();   
+        } catch (error) {
+
+            const c = document.createElement("div");
+            c.className = "container text-center mt-5";
+            c.innerHTML = "<p style='color:whitesmoke;' >Back-end fora do ar no momento... por favor, aguarde 30 segundos e atualize a página!";
+            document.querySelector("#divLoading").appendChild(c);
+            return;
+        }
+
+
         if(usuario==null){
             atalhos = ["login","index"];
         }else{
             atalhos = ["index","favoritos","perfil","avaliacoes"];
         }
-
-
-
 
         let headerhtml = "<div class='container mt-3'><div class='row m-2'><div class='col-12 text-center'><img class='img-fluid' src='assets/logo.png'></div></div><div class='row'><nav class=' navbar navbar-expand-md'><div class='container-fluid d-flex justify-content-center text-center'><button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarConteudo' aria-controls='navbarConteudo' aria-expanded='false' aria-label='Alternar navegação'><a>Menu</a></button><div class='collapse navbar-collapse' id='navbarConteudo'><ul class='navbar-nav mx-auto mt-2'>{ATALHOS}</nav></ul></div></div></div></div>";
 
@@ -196,19 +272,8 @@ async function esconderPagina(){
     }
 
 
-
     // Escondendo div de conteúdo
     document.querySelector("#divConteudo").style.display = "none";
-
-    // Adicionando div de carregamento
-    if(document.querySelector("#divLoading") == null){
-        let loading = document.createElement("div");
-        loading.id = "divLoading";
-        loading.className = "flex-fill";
-        loading.innerHTML = "<div class='container'><div class='row'><div class='col-12 text-center'><p>Carregando conteúdo...</p></div></div></div></div>";
-        document.body.appendChild(loading);
-    }
-
 
     // Adicionando div de rodapé
     // Obs.: Quando estivermos na página de Dashboard, que é onde acontecem as buscas por filme/série, deve-se verificar se o elemento rodapé já não foi adicionado, pois esta função é chamada sempre que o botão de busca é clicado.
@@ -238,8 +303,8 @@ async function esconderPagina(){
 
 // Variáveis para armazenar as rotas do back-end
 
-//let dominio = "http://127.0.0.1:5000";
-let dominio = "https://meu-cinema-backend.onrender.com";
+let dominio = "http://127.0.0.1:5000";
+//let dominio = "https://meu-cinema-backend.onrender.com";
 
 let rota_login = dominio + "/login";
 let rota_cadastro = dominio + "/cadastro";
