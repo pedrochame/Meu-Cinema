@@ -218,20 +218,15 @@ async function esconderPagina(){
         let usuario = null;
         
         // Caso ocorra alguma exceção ao buscar os dados do usuário, é por conta do back-end não responder a requisição... então, exibir mensagem para que o usuário aguarde algum tempo para atualizar a página
-        
-        
-        
-        // Adicionando div de carregamento
-        if(document.querySelector("#divLoading") == null){
 
-            let loading = document.createElement("div");
-            loading.id = "divLoading";
-            loading.className = "flex-fill container";
-            loading.innerHTML = "<div class='row'><div class='col-12 text-center mt-5 mb-5 '><img src='assets/loading.gif'></div></div></div>";
-            document.body.appendChild(loading);
 
-        }
-
+        //
+        const divAguarde = document.createElement("div");
+        divAguarde.id = "divAguarde";
+        divAguarde.className = "container text-center mb-4 mt-4";
+        divAguarde.innerHTML = "<img class='mb-4' src='assets/loading.gif'><p  style='color:whitesmoke;font-size:24px;' >Aguarde...</p>";
+        document.body.appendChild(divAguarde);
+        //
 
         try {
             usuario = await buscaUsuario();   
@@ -239,11 +234,15 @@ async function esconderPagina(){
 
             const c = document.createElement("div");
             c.className = "container text-center mt-5";
-            c.innerHTML = "<p style='color:whitesmoke;' >Back-end fora do ar no momento... por favor, aguarde 30 segundos e atualize a página!";
-            document.querySelector("#divLoading").appendChild(c);
+            c.innerHTML = "<p style='color:whitesmoke;font-size:24px;' >Back-end fora do ar no momento... por favor, aguarde 30 segundos e atualize a página!";
+            document.body.removeChild(divAguarde);
+            document.body.appendChild(c);
             return;
         }
 
+        //
+        document.body.removeChild(divAguarde);
+        //
 
         if(usuario==null){
             atalhos = ["login","index"];
@@ -287,6 +286,20 @@ async function esconderPagina(){
 
 
 
+
+            // Adicionando div de carregamento
+        if(document.querySelector("#divLoading") == null){
+
+            let loading = document.createElement("div");
+            loading.id = "divLoading";
+            loading.className = "flex-fill container";
+            loading.innerHTML = "<div class='row'><div class='col-12 text-center mt-5 mb-5 '><img src='assets/loading.gif'></div></div></div>";
+            document.body.appendChild(loading);
+
+        }
+
+
+
     // Para que a estrutura da página fique correta (divHeader em cima, divLoading abaixo e divFooter depois), precisamos remover e adicionar as divs, para reorganizar
     let divLoading = document.body.querySelector("#divLoading");
     let divHeader = document.body.querySelector("#divHeader");
@@ -303,8 +316,8 @@ async function esconderPagina(){
 
 // Variáveis para armazenar as rotas do back-end
 
-//let dominio = "http://127.0.0.1:5000";
-let dominio = "https://meu-cinema-backend.onrender.com";
+let dominio = "http://127.0.0.1:5000";
+//let dominio = "https://meu-cinema-backend.onrender.com";
 
 let rota_login = dominio + "/login";
 let rota_cadastro = dominio + "/cadastro";
