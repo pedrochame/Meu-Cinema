@@ -1,0 +1,3 @@
+from .usuarioController import usuarioController
+from .favoritoController import favoritoController
+from .avaliacaoController import avaliacaoController
