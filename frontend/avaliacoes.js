@@ -73,7 +73,8 @@ async function configuraDiv(filme){
 
 
 
-    //Indicador de avaliado e favorito (se for)
+    //Indicador de favorito (se for)
+    /*
     let response = await fetch(rota_favoritos+"/"+filme["id"]+"?tipo="+filme["tipo"],{
             method:"GET",
             credentials:"include",
@@ -89,7 +90,12 @@ async function configuraDiv(filme){
             filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/avaliado.png'></div>";
         }
     }
-
+    */
+    if(filme["favorito"]==true){
+        filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/favorito.png'><img class='img-avaliado' src='assets/avaliado.png'></div>";
+    }else{
+        filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/avaliado.png'></div>";
+    }
 
 
     painelConteudo.appendChild(filmeDiv);

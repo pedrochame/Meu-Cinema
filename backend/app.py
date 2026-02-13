@@ -179,7 +179,11 @@ def filmes():
     resp = requests.get(url, params=params)
     if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter filmes da API do TMDB."}),502
 
-    return jsonify(resp.json()["results"]), 200
+
+    # Antes de devolver o json, incluir se cada filme é ou não favorito/avaliado (caso usuário esteja logado)
+    filmes = registraFavoritosAvaliados(resp.json()["results"], "filme")
+            
+    return jsonify(filmes), 200
 
 # Rota para retornar séries mais bem avaliadas (requisitando API TMDB)
 @app.route("/series",methods=["GET"])
@@ -196,7 +200,10 @@ def series():
     resp = requests.get(url, params=params)
     if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter séries da API do TMDB."}),502
 
-    return jsonify(resp.json()["results"]), 200
+    # Antes de devolver o json, incluir se cada série é ou não favorito/avaliado (caso usuário esteja logado)
+    series = registraFavoritosAvaliados(resp.json()["results"], "serie")
+
+    return jsonify(series), 200
 
 
 # Rota para retornar filmes buscados (requisitando API TMDB)
@@ -235,7 +242,12 @@ def filmes_busca():
     
         resp = requests.get(url, params=params)
         if resp.status_code != 200: return jsonify({"Mensagem": "Erro ao obter filmes por gênero/país/ano da API do TMDB."}),502
-        return jsonify(resp.json()["results"]),200
+        
+        # Antes de devolver o json, incluir se cada filme é ou não favorito/avaliado (caso usuário esteja logado)
+        filmes = registraFavoritosAvaliados(resp.json()["results"], "filme")
+
+        
+        return jsonify(filmes),200
 
     else:
         
@@ -285,7 +297,8 @@ def filmes_busca():
             if (generoBusca=="" and paisBusca=="") or (generoBusca != "" and paisBusca != "" and int(generoBusca) in filme["genre_ids"] and paisBusca in pais) or (paisBusca == "" and generoBusca != "" and int(generoBusca) in filme["genre_ids"]) or (generoBusca=="" and paisBusca != "" and paisBusca in pais):
                     filmes.append(filme)
         
-        
+        # Antes de devolver o json, incluir se cada filme é ou não favorito/avaliado (caso usuário esteja logado)
+        filmes = registraFavoritosAvaliados(filmes, "filme")
         return jsonify(filmes),200
 
 # Rota para retornar séries buscadas (requisitando API TMDB)
@@ -325,7 +338,11 @@ def series_busca():
         if resp.status_code != 200: 
             return jsonify({"Mensagem": "Erro ao obter séries por gênero/país da API do TMDB."}),502
         
-        return jsonify(resp.json()["results"]),200
+
+        # Antes de devolver o json, incluir se cada série é ou não favorito/avaliado (caso usuário esteja logado)
+        series = registraFavoritosAvaliados(resp.json()["results"], "serie")
+
+        return jsonify(series),200
 
     else:
         
@@ -362,6 +379,10 @@ def series_busca():
                     series.append(serie)
         
         
+
+        # Antes de devolver o json, incluir se cada série é ou não favorito/avaliado (caso usuário esteja logado)
+        series = registraFavoritosAvaliados(series, "serie")
+
         return jsonify(series),200
 
 # Rota para retornar um filme específico (requisitando API TMDB)
@@ -556,6 +577,11 @@ def buscaFavoritos():
 
             #favoritos_json["serie"].append(resposta.json())
 
+
+    # Antes de devolver o json, incluir se cada favorito é ou não avaliado (caso usuário esteja logado)
+    favoritos_json["filme"] = registraFavoritosAvaliados(favoritos_json["filme"], "filme",False,True)
+    favoritos_json["serie"] = registraFavoritosAvaliados(favoritos_json["serie"], "serie",False,True)
+    
     return jsonify(favoritos_json),200
 
 
@@ -773,6 +799,11 @@ def buscaAvaliacoes():
                 "tipo_label":"Série",
             })
 
+
+    # Antes de devolver o json, incluir se cada avaliado é ou não favorito (caso usuário esteja logado)
+    avaliados_json["filme"] = registraFavoritosAvaliados(avaliados_json["filme"], "filme",True,False)
+    avaliados_json["serie"] = registraFavoritosAvaliados(avaliados_json["serie"], "serie",True,False)
+
     return jsonify(avaliados_json),200
 
 
@@ -781,6 +812,33 @@ def buscaAvaliacoes():
 def unauthorized():
     return jsonify({"Mensagem": "Usuário não autenticado."}), 401
 
+# Função que recebe uma lista de filmes/séries, e adiciona em cada um a informação que indica se é favorito ou avaliado do usuário
+def registraFavoritosAvaliados(filmes, tipo, avaliarFavoritos = True, avaliarAvaliados = True):
+    if current_user.is_authenticated:
+        
+        if avaliarFavoritos:
+            favoritos = favoritoController.buscaFavoritos(current_user.id)
+
+            for filme in filmes:
+
+                filme["favorito"] = False
+
+                if {"filme_id" : str(filme["id"]) , "tipo":tipo} in favoritos:
+                    filme["favorito"] = True
+
+        if avaliarAvaliados:
+            avaliados = avaliacaoController.buscaAvaliacoes(current_user.id)
+
+            for filme in filmes:
+
+                filme["avaliado"] = False
+
+                for avaliado in avaliados:
+                    if avaliado["filme_id"] == str(filme["id"]) and avaliado["tipo"] == tipo:
+                        filme["avaliado"] = True
+                        break
+    
+    return filmes
 
 # Executando aplicação localmente
 #if __name__ == "__main__":

@@ -173,7 +173,8 @@ async function configuraDiv(tipoFilme,filme,usuarioLogado){
         let divIndicadores = document.createElement("div");
         divIndicadores.id = 'painelIndicadores';
         divIndicadores.className ='d-flex justify-content-center';
-        
+
+        /*
 
         let url = rota_favoritos+"/"+filme["id"]+"?tipo=serie";
         if(tipoFilme){
@@ -217,6 +218,24 @@ async function configuraDiv(tipoFilme,filme,usuarioLogado){
                 divIndicadores.appendChild(indicador2);
             }
         }
+
+        */
+
+        let indicador = null
+
+        if(filme["favorito"] == true){    
+                indicador = document.createElement("img");
+                indicador.className = "img-favorito";
+                indicador.src = 'assets/favorito.png';
+                divIndicadores.appendChild(indicador);
+        }
+        if(filme["avaliado"] == true){    
+                indicador = document.createElement("img");
+                indicador.className = "img-avaliado";
+                indicador.src = 'assets/avaliado.png';
+                divIndicadores.appendChild(indicador);
+        }
+
         filmeDiv.appendChild(divIndicadores);
     }
 

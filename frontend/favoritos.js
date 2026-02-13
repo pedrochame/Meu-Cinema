@@ -69,7 +69,9 @@ async function configuraDiv(filme){
     //Label de Exibição (Filme ou Série)
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><i>"+filme["tipo_label"]+"</i></div>";
 
-    //Indicador de favorito e avaliado (se for)
+    //Indicador de avaliado (se for)
+
+    /*
     let response = await fetch(rota_avaliacoes+"/"+filme["id"]+"?tipo="+filme["tipo"],{
             method:"GET",
             credentials:"include",
@@ -85,8 +87,12 @@ async function configuraDiv(filme){
             filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/favorito.png'></div>";
         }
     }
-
-
+    */
+    if(filme["avaliado"] == true){
+        filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/favorito.png'><img class='img-avaliado' src='assets/avaliado.png'></div>";
+    }else{
+        filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/favorito.png'></div>";
+    }
 
 
     painelConteudo.appendChild(filmeDiv);
