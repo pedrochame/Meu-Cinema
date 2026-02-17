@@ -538,45 +538,18 @@ def buscaFavoritos():
     }
 
     for favorito in favoritos:
-        
+
         if favorito["tipo"] == "filme": 
             url = "https://api.themoviedb.org/3/movie/"+favorito["filme_id"]
-            resposta = requests.get(url, params=params)
-
-            if resposta.status_code != 200: return jsonify(resposta.json()),400
-
-            dados = resposta.json()
-            favoritos_json["filme"].append({
-                    "img" :"https://image.tmdb.org/t/p/w500"+str(dados["poster_path"]),
-                    "nome":str(dados["title"]),
-                    "data":str(dados["release_date"]),
-                    "id":str(dados["id"]),
-                    "notaImdb":str(dados["vote_average"]),
-                    "tipo":"filme",
-                    "tipo_label":"Filme",
-                })
-
-            #favoritos_json["filme"].append(resposta.json())
-            
         if favorito["tipo"] == "serie": 
             url = "https://api.themoviedb.org/3/tv/"+favorito["filme_id"]
-            resposta = requests.get(url, params=params)
+        
+        resposta = requests.get(url, params=params)
 
-            if resposta.status_code != 200: return jsonify(resposta.json()),400
+        if resposta.status_code != 200: return jsonify(resposta.json()),400
 
-            dados = resposta.json()
-            favoritos_json["serie"].append({
-                    "img" :"https://image.tmdb.org/t/p/w500"+str(dados["poster_path"]),
-                    "nome":str(dados["name"]),
-                    "data":str(dados["first_air_date"]),
-                    "id":str(dados["id"]),
-                    "notaImdb":str(dados["vote_average"]),
-                    "tipo": "serie",
-                    "tipo_label":"Série",
-            })
-
-            #favoritos_json["serie"].append(resposta.json())
-
+        dados = resposta.json()
+        favoritos_json[favorito["tipo"]].append(retornaDictFavorito(dados,favorito["tipo"]))
 
     # Antes de devolver o json, incluir se cada favorito é ou não avaliado (caso usuário esteja logado)
     favoritos_json["filme"] = registraFavoritosAvaliados(favoritos_json["filme"], "filme",False,True)
@@ -619,51 +592,23 @@ def provedores(tipo,id):
     if "BR" in resultado["results"]:
         if "free" in resultado["results"]["BR"]:
             for i in resultado["results"]["BR"]["free"]:
-
-                provedores["gratuito"].append({
-                    "img" :"https://image.tmdb.org/t/p/w500"+str(i["logo_path"]),
-                    "nome":i["provider_name"],
-                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                    "provedor_id":i["provider_id"]
-                })
+                provedores["gratuito"].append(retornaDictProvedor(i["provider_id"],i["provider_name"],i["logo_path"]))
                 
         if "ads" in resultado["results"]["BR"]:
             for i in resultado["results"]["BR"]["ads"]:
-
-                provedores["anuncios"].append({
-                    "img" :"https://image.tmdb.org/t/p/w500"+str(i["logo_path"]),
-                    "nome":i["provider_name"],
-                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                    "provedor_id":i["provider_id"]
-                })
+                provedores["anuncios"].append(retornaDictProvedor(i["provider_id"],i["provider_name"],i["logo_path"]))
 
         if "flatrate" in resultado["results"]["BR"]:
             for i in resultado["results"]["BR"]["flatrate"]:
-
-                provedores["incluso"].append({
-                    "img" :"https://image.tmdb.org/t/p/w500"+str(i["logo_path"]),
-                    "nome":i["provider_name"],
-                    "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                    "provedor_id":i["provider_id"]
-                })
+                provedores["incluso"].append(retornaDictProvedor(i["provider_id"],i["provider_name"],i["logo_path"]))
 
         if "buy" in resultado["results"]["BR"]:
             for i in resultado["results"]["BR"]["buy"]:
-                provedores["comprar"].append({
-                "img" :"https://image.tmdb.org/t/p/w500"+str(i["logo_path"]),
-                "nome":i["provider_name"],
-                "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                "provedor_id":i["provider_id"]
-            })
+                provedores["comprar"].append(retornaDictProvedor(i["provider_id"],i["provider_name"],i["logo_path"]))
 
         if "rent" in resultado["results"]["BR"]:
             for i in resultado["results"]["BR"]["rent"]:
-                provedores["alugar"].append({
-                "img" :"https://image.tmdb.org/t/p/w500"+str(i["logo_path"]),
-                "nome":i["provider_name"],
-                "site":auxiliar.buscaSiteProvedor(i["provider_id"],i["provider_name"]),
-                "provedor_id":i["provider_id"]
-            })
+                provedores["alugar"].append(retornaDictProvedor(i["provider_id"],i["provider_name"],i["logo_path"]))
 
     return jsonify(provedores),200
 
@@ -681,8 +626,8 @@ def criarAvaliacao():
         return jsonify({"Mensagem":"Os campos são obrigatórios."}),400
 
     try:
-        if int(nota) < 0  or int(nota) > 5:
-            return jsonify({"Mensagem":"A nota deve ser entre 0 e 5."}),400
+        if int(nota) < 0  or int(nota) > 10:
+            return jsonify({"Mensagem":"A nota deve ser entre 0 e 10."}),400
     except:
         return jsonify({"Mensagem":"A nota deve ser um número."}),400
    
@@ -722,8 +667,8 @@ def editarAvaliacao(id):
     try:
         nota = request.json["nota"]
         print(nota)
-        if int(nota) < 1 or int(nota) > 5:
-            return jsonify({"Mensagem" : "O parâmetro 'nota' deve ser um número de 1 a 5."}) , 400
+        if int(nota) < 1 or int(nota) > 10:
+            return jsonify({"Mensagem" : "O parâmetro 'nota' deve ser um número de 1 a 10."}) , 400
     except:
         return jsonify({"Mensagem" : "O parâmetro 'nota' é obrigatório."}) , 400
 
@@ -767,38 +712,15 @@ def buscaAvaliacoes():
         
         if avaliado["tipo"] == "filme": 
             url = "https://api.themoviedb.org/3/movie/"+avaliado["filme_id"]
-            resposta = requests.get(url, params=params)
-
-            if resposta.status_code != 200: return jsonify(resposta.json()),400
-
-            dados = resposta.json()
-            avaliados_json["filme"].append({
-                "id": dados["id"],
-                "nome":dados["title"],
-                "img" :"https://image.tmdb.org/t/p/w500"+str(dados["poster_path"]),
-                "nota":avaliado["nota"],
-                "data":avaliado["data"],
-                "tipo":avaliado["tipo"],
-                "tipo_label":"Filme",
-            })
-
         if avaliado["tipo"] == "serie": 
             url = "https://api.themoviedb.org/3/tv/"+avaliado["filme_id"]
-            resposta = requests.get(url, params=params)
+        
+        resposta = requests.get(url, params=params)
 
-            if resposta.status_code != 200: return jsonify(resposta.json()),400
+        if resposta.status_code != 200: return jsonify(resposta.json()),400
 
-            dados = resposta.json()
-            avaliados_json["serie"].append({
-                "id": dados["id"],
-                "nome":dados["name"],
-                "img" :"https://image.tmdb.org/t/p/w500"+str(dados["poster_path"]),
-                "nota":avaliado["nota"],
-                "data":avaliado["data"],
-                "tipo":avaliado["tipo"],
-                "tipo_label":"Série",
-            })
-
+        dados = resposta.json()
+        avaliados_json[avaliado["tipo"]].append(retornaDictAvaliacao(dados,avaliado))
 
     # Antes de devolver o json, incluir se cada avaliado é ou não favorito (caso usuário esteja logado)
     avaliados_json["filme"] = registraFavoritosAvaliados(avaliados_json["filme"], "filme",True,False)
@@ -814,6 +736,14 @@ def unauthorized():
 
 # Função que recebe uma lista de filmes/séries, e adiciona em cada um a informação que indica se é favorito ou avaliado do usuário
 def registraFavoritosAvaliados(filmes, tipo, avaliarFavoritos = True, avaliarAvaliados = True):
+    
+    # Aproveitamos para arredondar a nota média do IMDB
+    for filme in filmes:
+        if "vote_average" in filme.keys():
+            filme["vote_average"] = round(filme["vote_average"],1)
+        if "notaImdb" in filme.keys():
+            filme["notaImdb"] = round(float(filme["notaImdb"]),1)
+
     if current_user.is_authenticated:
         
         if avaliarFavoritos:
@@ -839,6 +769,56 @@ def registraFavoritosAvaliados(filmes, tipo, avaliarFavoritos = True, avaliarAva
                         break
     
     return filmes
+
+# Função que recebe id, nome e caminho para imagem de provedor, e retorna um dicionário
+def retornaDictProvedor(id, nome, img):
+    return {
+            "img" :"https://image.tmdb.org/t/p/w500"+str(img),
+            "nome":nome,
+            "site":auxiliar.buscaSiteProvedor(id,nome),
+            "provedor_id":id
+    }
+
+# Função que recebe um filme/série do TMDB e uma avaliação desse conteúdo e retorna um dicionário
+def retornaDictAvaliacao(dados, avaliado):
+    if avaliado["tipo"] == "filme":
+        tipo = "filme"
+        tipo_label = "Filme"
+        nome = "title"
+    else:
+        tipo = "serie"
+        tipo_label = "Série"
+        nome = "name"
+    return {
+            "id": dados["id"],
+            "nome":dados[nome],
+            "img" :"https://image.tmdb.org/t/p/w500"+str(dados["poster_path"]),
+            "nota":avaliado["nota"],
+            "data":avaliado["data"],
+            "tipo":tipo,
+            "tipo_label":tipo_label,
+    }
+
+# Função que recebe um filme/série do TMDB e o tipo (Filme ou Série) e retorna um dicionário 
+def retornaDictFavorito(dados,tipo):
+    if tipo == "filme":
+        tipo_label = "Filme"
+        campo_data = "release_date"
+        nome = "title"
+    else:
+        tipo_label = "Série"
+        campo_data = "first_air_date"
+        nome = "name"
+    return  {
+        "img" :"https://image.tmdb.org/t/p/w500"+str(dados["poster_path"]),
+        "nome":str(dados[nome]),
+        "data":str(dados[campo_data]),
+        "id":str(dados["id"]),
+        "notaImdb":str(dados["vote_average"]),
+        "tipo":tipo,
+        "tipo_label":tipo_label,
+    }
+    
 
 # Executando aplicação localmente
 #if __name__ == "__main__":

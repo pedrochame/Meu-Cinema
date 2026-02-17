@@ -1,7 +1,7 @@
 .filme-div{
     width: 250px;
     border: 2px solid black;
-    border-radius: 0px;
+    border-radius: 12px;
     background-color: whitesmoke;
     box-shadow: 2px 2px 18px 8px #951abe;
 
@@ -12,14 +12,14 @@
 
     #divImg{
         overflow: hidden;
-        border-radius: 64px;
-        border: 2px solid black;
+        border-radius: 0px;
+        border: 1px solid black;
         margin: 10px;
     }
     
     img:hover{
-        transform: scale(1.15);
-        transition: .4s ease-in-out;
+        transform: scale(1.1);
+        transition: .6s ease-in-out;
     }
 
 }
@@ -165,4 +165,9 @@ body{
 /* Links */
 a:hover{
     cursor:pointer;
+}
+
+/* 17.02.26 - Removendo scroll horizontal*/
+html{
+    overflow-x: hidden !important;
 }

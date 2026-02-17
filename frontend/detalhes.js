@@ -22,6 +22,9 @@ let painelAvaliacao = document.querySelector("#painelAvaliacao");
 // 26.07.25 -> Variável para indicar se o usuário está ou não logado
 let usuarioLogado = false;
 
+// 17.02.26 -> Variável que indica o máximo de nota (passado de 5 para 10)
+let estrelas = 10;
+
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos a função que se comunicará com o back-end buscando o determinado filme/série e a função que irá preencher os dados na tela com as informações obtidas.
@@ -61,7 +64,7 @@ async function configAvaliacao(){
     if(dados != -1){
 
         //26.07.25 -> Resetando estrelas de avaliação
-        for(let i = 1; i<=5;i++){
+        for(let i = 1; i<=estrelas;i++){
             document.querySelector("#estrela"+i).src = 'assets/estrela0.png';
         }
 
@@ -107,7 +110,7 @@ async function configAvaliacao(){
 //Se o filme/série não tiver sido avaliado, ao passar o mouse sobre as estrelas, elas mudam de cor, indicando a nota que o usuário está dando.
 function liberarAvaliacao(){
 
-    for(let i = 1; i<=5;i++){
+    for(let i = 1; i<=estrelas;i++){
 
         document.querySelector("#estrela"+i).addEventListener("mouseover", ()=>{
             for(let j = 1; j<= i; j++){
@@ -121,7 +124,7 @@ function liberarAvaliacao(){
                 for(let j = 1; j<= notaAvaliacao; j++){
                     document.querySelector("#estrela"+j).src = 'assets/estrela1.png';
                 }
-                for(let j = notaAvaliacao+1; j<= 5; j++){
+                for(let j = notaAvaliacao+1; j<= estrelas; j++){
                     document.querySelector("#estrela"+j).src = 'assets/estrela0.png';
                 }
             }else{
@@ -136,7 +139,7 @@ function liberarAvaliacao(){
 }
 
 // 26.07.25 -> Ao clicar numa estrela, a respectiva nota é enviada na rota de avaliações no back-end
-for(let i=1;i<=5;i++){
+for(let i=1;i<=estrelas;i++){
     document.querySelector("#estrela"+i).addEventListener("click", async ()=>{
         
 
