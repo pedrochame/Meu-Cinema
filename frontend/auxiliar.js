@@ -344,13 +344,11 @@ function esconderPagina(usuario){
 }
 
 let dominio = "";
-if(location.pathname.substring(0,5) == "https"){
-    console.log("hospedagem");
-    dominio = "https://meu-cinema-backend.onrender.com";
+if(window.location.origin == "file//"){
+    dominio = "http://127.0.0.1:5000"; // Back-End Local
 }else{
-    console.log("local");
-    dominio = "http://127.0.0.1:5000";
-};
+    dominio = "https://meu-cinema-backend.onrender.com"; // Back-End Hospedado
+}
 
 // Variáveis para armazenar as rotas do back-end
 let rota_login = dominio + "/login";

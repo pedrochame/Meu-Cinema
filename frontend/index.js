@@ -107,8 +107,6 @@ async function busca(rota){
 // Função que configura os painéis visíveis e determina a rota de requsição ao back-end e chama a função que fará a requisição.
 async function buscaConteudo(){
 
-    console.clear();
-
     // Se forem todos os conteúdos, os painéis ficam visíveis. Se não, não.
     if(campoTipo.value == "tudo"){
         document.querySelector("#painel-series-pai").style.display = "block";
