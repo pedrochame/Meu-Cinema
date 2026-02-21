@@ -29,13 +29,14 @@ let estrelas = 10;
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos a função que se comunicará com o back-end buscando o determinado filme/série e a função que irá preencher os dados na tela com as informações obtidas.
 document.addEventListener("DOMContentLoaded", async () => {
-    esconderPagina();
+    
     let usuario = await buscaUsuario();
     if(usuario!=null){
         usuarioLogado = true;
     }else{
         usuarioLogado = false;
     }
+    esconderPagina(usuario);
     //if(usuario == null){
        // redireciona(caminho_tela_login);
     //}else{
@@ -308,7 +309,7 @@ function configPaginaProvedores(dados){
             let a = document.createElement("a");
             a.target = "_blank";
             a.href = provedor["site"];
-            img.src = caminho_tmdb_imagem+provedor["img"];
+            img.src = provedor["img"];
             img.className = "img-fluid m-2";
             a.appendChild(img);
             div.appendChild(a);

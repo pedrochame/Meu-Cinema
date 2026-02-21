@@ -23,10 +23,10 @@ class usuarioController():
             print("Usuário "+nome+" encontrado.")
         return resp
     
-    def criaUsuario(self,nome,senha):
-        resp = self.repo.criaUsuario(nome,senha)
+    def criaUsuario(self,nome,senha,email):
+        resp = self.repo.criaUsuario(nome,senha,email)
         if resp == False:
-            print("Usuário "+nome+" e não cadastrado.")
+            print("Usuário "+nome+" não cadastrado.")
         else:
             print("Usuário "+nome+" cadastrado.")
         return resp

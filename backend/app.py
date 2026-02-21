@@ -7,6 +7,7 @@ import auxiliar
 
 # Importanto bibliotecas necessárias
 import os
+import re
 import requests
 from flask import Flask, request,jsonify
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -57,12 +58,19 @@ def load_user(usuario_id):
 @app.route("/cadastro",methods=["POST"])
 def cadastro():
 
-    nome , senha = request.json["nome"] , request.json["senha"]
+    nome , senha , email = request.json["nome"] , request.json["senha"], request.json["email"]
+    
+    if email == "":
+        email = None
+    else:
+        regex_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        if not re.match(regex_pattern, email):
+            return jsonify({"Mensagem":"Falha ao cadastrar usuário. Email inválido."}),400
 
-    if usuarioController.criaUsuario(nome,senha):
+    if usuarioController.criaUsuario(nome,senha,email):
         return jsonify({"Mensagem":"Usuário cadastrado."}),201
     else:
-        return jsonify({"Mensagem":"Falha ao cadastrar usuário. Tente com outro nome."}),400
+        return jsonify({"Mensagem":"Falha ao cadastrar usuário. Tente com outro nome/email."}),400
 
 # Rota para logar o usuário
 @app.route("/login",methods=["POST"])
@@ -92,8 +100,8 @@ def logout():
 #@login_required
 def usuario():
     try:
-        nome = usuarioController.retornaUsuarioNome(current_user.id)
-        return jsonify({"ID": current_user.id,"Nome": nome}),200
+        nome,email = usuarioController.retornaUsuarioNome(current_user.id)
+        return jsonify({"ID": current_user.id,"Nome": nome,"Email":email}),200
     except:
         return jsonify({"Mensagem": "Usuário não autenticado."}),401
     
@@ -411,8 +419,8 @@ def getFilme(id):
         "nome":str(dados["title"]),
         "data": str(dados["release_date"].split("-")[0]),
         "duracao":str(dados["runtime"])+" min",
-        "capa":"https://image.tmdb.org/t/p/w500" + str(dados["poster_path"]),
-        "wallpaper":"https://image.tmdb.org/t/p/w1920"+str(dados["backdrop_path"]),
+        "capa":auxiliar.CAMINHO_TMDB_IMAGEM + str(dados["poster_path"]),
+        "wallpaper":auxiliar.CAMINHO_TMDB_IMAGEM+str(dados["backdrop_path"]),
         "sinopse":str(dados["overview"]),
     }
     
@@ -449,8 +457,8 @@ def getSerie(id):
         "nome":str(dados["name"]),
         "temporadas":str(dados["number_of_seasons"]),
         "episodios":str(dados["number_of_episodes"]),
-        "capa":"https://image.tmdb.org/t/p/w500" + str(dados["poster_path"]),
-        "wallpaper":"https://image.tmdb.org/t/p/w1920"+str(dados["backdrop_path"]),
+        "capa":auxiliar.CAMINHO_TMDB_IMAGEM + str(dados["poster_path"]),
+        "wallpaper":auxiliar.CAMINHO_TMDB_IMAGEM+str(dados["backdrop_path"]),
         "sinopse":str(dados["overview"]),
     }
 
@@ -743,7 +751,8 @@ def registraFavoritosAvaliados(filmes, tipo, avaliarFavoritos = True, avaliarAva
             filme["vote_average"] = round(filme["vote_average"],1)
         if "notaImdb" in filme.keys():
             filme["notaImdb"] = round(float(filme["notaImdb"]),1)
-
+        if "poster_path" in filme.keys():
+            filme["poster_path"] = auxiliar.CAMINHO_TMDB_IMAGEM+filme["poster_path"]
     if current_user.is_authenticated:
         
         if avaliarFavoritos:
@@ -773,7 +782,7 @@ def registraFavoritosAvaliados(filmes, tipo, avaliarFavoritos = True, avaliarAva
 # Função que recebe id, nome e caminho para imagem de provedor, e retorna um dicionário
 def retornaDictProvedor(id, nome, img):
     return {
-            "img" :"https://image.tmdb.org/t/p/w500"+str(img),
+            "img" :auxiliar.CAMINHO_TMDB_IMAGEM+str(img),
             "nome":nome,
             "site":auxiliar.buscaSiteProvedor(id,nome),
             "provedor_id":id
@@ -792,7 +801,7 @@ def retornaDictAvaliacao(dados, avaliado):
     return {
             "id": dados["id"],
             "nome":dados[nome],
-            "img" :"https://image.tmdb.org/t/p/w500"+str(dados["poster_path"]),
+            "img" :auxiliar.CAMINHO_TMDB_IMAGEM+str(dados["poster_path"]),
             "nota":avaliado["nota"],
             "data":avaliado["data"],
             "tipo":tipo,
@@ -810,7 +819,7 @@ def retornaDictFavorito(dados,tipo):
         campo_data = "first_air_date"
         nome = "name"
     return  {
-        "img" :"https://image.tmdb.org/t/p/w500"+str(dados["poster_path"]),
+        "img" :auxiliar.CAMINHO_TMDB_IMAGEM+str(dados["poster_path"]),
         "nome":str(dados[nome]),
         "data":str(dados[campo_data]),
         "id":str(dados["id"]),

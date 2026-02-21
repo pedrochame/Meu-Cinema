@@ -1,11 +1,12 @@
 // Variáveis da tela de Cadastro
 let btCadastro = document.querySelector("#btCadastro");
 let nomeUsuario = document.querySelector("#nomeUsuario");
+let emailUsuario = document.querySelector("#emailUsuario");
 let senhaUsuario = document.querySelector("#senhaUsuario");
 let info = document.querySelector("#info");
 
 // Função que faz requisição ao back-end, na rota de Cadastro de usuário
-async function cadastro(nomeUsuario,senhaUsuario){
+async function cadastro(nomeUsuario,senhaUsuario,emailUsuario){
     let response = await fetch(rota_cadastro,{
         method: "POST",
         credentials:"include",
@@ -13,6 +14,7 @@ async function cadastro(nomeUsuario,senhaUsuario){
         body: JSON.stringify({ 
             nome : nomeUsuario,
             senha : senhaUsuario,
+            email : emailUsuario,
             })
         });
     
@@ -30,10 +32,10 @@ async function cadastro(nomeUsuario,senhaUsuario){
 // Quando o botão de cadastro é clicado, os campos são verificados e a função de cadastro é chamada
 btCadastro.addEventListener("click", async ()=>{
     if(nomeUsuario.value == "" || senhaUsuario.value == ""){
-        info.textContent = "Os campos são obrigatórios!"
+        info.textContent = "Os campos Nome e Senha são obrigatórios!"
         return;
     }
-    await cadastro(nomeUsuario.value,senhaUsuario.value);
+    await cadastro(nomeUsuario.value,senhaUsuario.value,emailUsuario.value);
 });
 
 // Quando algum campo for focado, a mensagem de informação deixa de ser exibida

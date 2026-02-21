@@ -99,3 +99,5 @@ def buscaSiteProvedor(id,name):
         if id == i["id"]:
             return i["site"]
     return "https://www.google.com/search?q="+name
+
+CAMINHO_TMDB_IMAGEM = "https://image.tmdb.org/t/p/original"

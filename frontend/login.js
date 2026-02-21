@@ -18,7 +18,8 @@ async function login(nomeUsuario,senhaUsuario){
 
     // Se a resposta for positiva (status 200), o usuário é redirecionado para a tela de perfil
     if(response.status == 200){
-        window.location = "perfil.html";
+        //window.location = "perfil.html";
+        window.location = "index.html";
     }else{
         // Se não, a mensagem retornada pelo Back-End será exibida na tela
         let dados = await response.json();
@@ -40,11 +41,12 @@ btLogin.addEventListener("click", async ()=>{
 // Assim que a página estiver pronta, é verificado se o usuário está logado.
 // Se estiver, redirecionamos para a tela de perfil.
 document.addEventListener("DOMContentLoaded", async () => {
-    esconderPagina();
+    
     let usuario = await buscaUsuario();
     if(usuario != null){
         redireciona(caminho_tela_perfil);
     }
+    esconderPagina(usuario);
 
     // Ao clicar no link da página de cadastro, redirecionar
     document.querySelector("#linkCadastro").addEventListener("click",()=>{

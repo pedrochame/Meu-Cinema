@@ -8,22 +8,19 @@ let campoTipo = document.querySelector("#campoTipo"); // 30.05.25:Campo para fil
 let campoAno = document.querySelector("#campoAno"); // 16.09.25: Campo para filtrar por ano
 let btBuscar = document.querySelector("#btBuscar");
 
+let usuario = null;
+
 // Assim que a página é carregada, é verificado se o usuário está logado.
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos as funções que se comunicarão com o back-end buscando gêneros, países e filmes/séries e configurarão os elementos a serem exibidos em tela.
 document.addEventListener("DOMContentLoaded", async () => {
-    esconderPagina();
     
-    /*
-    let usuario = await buscaUsuario();
-    if(usuario == null){
-        redireciona(caminho_tela_login);
-    }else{
-        await generos();
-        await paises();
-    }
     
-    */
+    
+    usuario = await buscaUsuario();
+    esconderPagina(usuario);
+    
+    
     await generos();
     await paises();
 
@@ -39,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Quando o botão de busca é clicado, chamamos a função que se comunicará com o back-end na rota de pesquisa.
 btBuscar.addEventListener("click", async () => {
-    esconderPagina();
+    esconderPagina(usuario);
     await buscaConteudo();
     exibirPagina();
 
@@ -49,7 +46,7 @@ btBuscar.addEventListener("click", async () => {
 // Se forem séries,  chama a função que vai criar os elementos visuais dos filmes no painél.
 async function configuraPainel(tipoConteudo,dados){
 
-    let usuario = await buscaUsuario();
+    //usuario = await buscaUsuario();
     let usuarioLogado = false;
     if(usuario!=null){
         usuarioLogado = true;
@@ -245,7 +242,7 @@ async function configuraDiv(tipoFilme,filme,usuarioLogado){
 
 
     // Se não houver imagem, é colocada uma capa padrão
-    let caminho_imagem = caminho_tmdb_imagem+filme["poster_path"];
+    let caminho_imagem = filme["poster_path"];
     if(filme["poster_path"] == null){
         caminho_imagem = "assets/sem_capa.png";
     }

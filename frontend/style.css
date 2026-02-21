@@ -38,6 +38,9 @@
 }
 
 #divHeader{
+    p{
+        color:white;
+    }
     background-color: #1C1C1C;
     a {
         text-decoration: none;
@@ -86,9 +89,9 @@ body{
 
 #painelProvedores{
     img{
-        width: 45px;
-        border-radius: 50%;
-        border: 3.25px solid black;
+        width: 38px;
+        border-radius: 20%;
+        border: 1px solid black;
         font-weight: bold;
         box-shadow: 6px 6px 6px black;
     }
@@ -171,3 +174,8 @@ a:hover{
 html{
     overflow-x: hidden !important;
 }
+
+/* 21.02.26 - Novas fontes */
+body { font-family: Arial, Helvetica, sans-serif !important; }
+p { font-family: "Trebuchet MS", Tahoma, sans-serif !important; }
+h1 { font-family: Impact, Charcoal, sans-serif !important; }

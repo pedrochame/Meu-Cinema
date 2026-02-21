@@ -23,11 +23,11 @@ class usuarioDAO():
         
         # Query alterada de SQLite para PostgreSQL
         #cursor.execute("select nome from usuario where id = ?",[id])
-        cursor.execute("select nome from usuario where id = %s",[id])
+        cursor.execute("select nome,email from usuario where id = %s",[id])
         
         registro = cursor.fetchone()
         conexao.close()
-        return registro[0]
+        return registro[0],registro[1]
 
     # Função que recebe um id e verifica se o usuário existe no banco
     def verificaUsuario(self,id):
@@ -81,7 +81,7 @@ class usuarioDAO():
     
     # Função que recebe nome e senha e inclui um usuário no banco.
     # Se for possível incluir, retorna True. Se não, retorna False.
-    def criaUsuario(self,nome,senha):
+    def criaUsuario(self,nome,senha,email):
 
         # Criptografando senha
         senha = generate_password_hash(senha)
@@ -92,13 +92,20 @@ class usuarioDAO():
         # Conexão com o banco de dados SQLite
         #conexao = sqlite3.connect(bd_path)
 
-
         cursor = conexao.cursor()
+
+        # Caso haja outro usuário com o mesmo nome ou email, não avançar
+        cursor.execute("select * from usuario where nome = %s or (email is not null and email = %s)",[nome,email])
+        registros = cursor.fetchall()
+        if len(registros)>0:
+            print("Já existe um outro usuário com mesmo nome ou email.")
+            return False
+
         try:
             
             # Query alterada de SQLite para PostgreSQL
             #cursor.execute("insert into usuario(nome,senha) values (?,?)",[nome,senha])
-            cursor.execute("insert into usuario(nome,senha) values (%s,%s)",[nome,senha])
+            cursor.execute("insert into usuario(nome,senha,email) values (%s,%s,%s)",[nome,senha,email])
             
             conexao.commit()
             return True

@@ -124,14 +124,32 @@ function removerCarregamento(elementoParaExibir){
 
 }
 
-
-// Função que verifica se o usuário está logado no sistema
-async function buscaUsuario(){
-    let response = await fetch(rota_usuario,{
+// Função que faz requisição ao Back-End, na rota de deslogar usuário
+async function logout(){
+    let response = await fetch(rota_logout,{
         method:"GET",
         credentials:"include"
     });
+        
+    // Se a resposta for positiva (status 200), o usuário é redirecionado para a página de login
+    if(response.status == 200){
+        window.location = "login.html";
+    }
 
+}
+
+// Função que verifica se o usuário está logado no sistema
+async function buscaUsuario(){
+    // Caso ocorra falha na requisição, é por conta do back-end estar fora ar, então redirecionar para página que informará ao usuário para aguardar e tentar novamente
+    let response = null;
+    try{
+        response = await fetch(rota_usuario,{
+        method:"GET",
+        credentials:"include"
+    });
+    }catch{
+        redireciona("falha.html");
+    }
     switch(response.status){
         
         // Se a resposta for que o usuário não está autorizado (status 401), é retornado NULL
@@ -204,7 +222,7 @@ function personalizaIconesFooter(){
 }
 
 
-async function esconderPagina(){
+function esconderPagina(usuario){
 
     // Adicionando div de cabeçalho
     if(document.querySelector("#divHeader") == null){ 
@@ -215,7 +233,7 @@ async function esconderPagina(){
 
 
         // Se usuário está logado, todas as opções aparecem. Se não, somente de login e início
-        let usuario = null;
+        //let usuario = null;
         
         // Caso ocorra alguma exceção ao buscar os dados do usuário, é por conta do back-end não responder a requisição... então, exibir mensagem para que o usuário aguarde algum tempo para atualizar a página
 
@@ -227,7 +245,7 @@ async function esconderPagina(){
         divAguarde.innerHTML = "<img class='mb-4' src='assets/loading.gif'><p  style='color:whitesmoke;font-size:24px;' >Aguarde...</p>";
         document.body.appendChild(divAguarde);
         //
-
+/*
         try {
             usuario = await buscaUsuario();   
         } catch (error) {
@@ -239,7 +257,7 @@ async function esconderPagina(){
             document.body.appendChild(c);
             return;
         }
-
+*/
         //
         document.body.removeChild(divAguarde);
         //
@@ -250,7 +268,17 @@ async function esconderPagina(){
             atalhos = ["index","favoritos","perfil","avaliacoes"];
         }
 
-        let headerhtml = "<div class='container mt-3'><div class='row m-2'><div class='col-12 text-center'><img class='img-fluid' src='assets/logo.png'></div></div><div class='row'><nav class=' navbar navbar-expand-md'><div class='container-fluid d-flex justify-content-center text-center'><button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarConteudo' aria-controls='navbarConteudo' aria-expanded='false' aria-label='Alternar navegação'><a>Menu</a></button><div class='collapse navbar-collapse' id='navbarConteudo'><ul class='navbar-nav mx-auto mt-2'>{ATALHOS}</nav></ul></div></div></div></div>";
+        let headerhtml = "<div class='container mt-3'>{user}<div class='row m-2'><div class='col-12 text-center'><img class='img-fluid' src='assets/logo.png'></div></div><div class='row'><nav class=' navbar navbar-expand-md'><div class='container-fluid d-flex justify-content-center text-center'><button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarConteudo' aria-controls='navbarConteudo' aria-expanded='false' aria-label='Alternar navegação'><a>Menu</a></button><div class='collapse navbar-collapse' id='navbarConteudo'><ul class='navbar-nav mx-auto mt-2'>{ATALHOS}</nav></ul></div></div></div></div>";
+
+        // Caso o usuário esteja logado, adicionar ao cabeçalho seu nome e link para deslogar
+        if(usuario==null){
+            headerhtml = headerhtml.replace("{user}","");
+        }else{
+            headerhtml = headerhtml.replace("{user}",
+                "<div class='container'><div class='row'><div class='col-12 text-center'><p>Olá, "+usuario["Nome"]+"! (<a onclick='logout()'>Sair</a>)</p></div></div></div>");
+        }
+        //
+
 
         let atalhoshtml = "";
         atalhos.forEach(a => {
@@ -346,9 +374,4 @@ let caminho_tela_login = "login.html";
 let caminho_tela_cadastro = "cadastro.html";
 let caminho_tela_perfil = "perfil.html";
 let caminho_tela_index = "index.html";
-let caminho_tela_avaliacoes = "avaliacoes.html"
-
-
-// Variáveis com os caminhos das imagens fornecidas pelo TMDB
-let caminho_tmdb_imagem_wallpaper="https://image.tmdb.org/t/p/w1920"
-let caminho_tmdb_imagem = "https://image.tmdb.org/t/p/w500"
+let caminho_tela_avaliacoes = "avaliacoes.html";
