@@ -85,7 +85,8 @@ function converteData(data){
         timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Fuso horário do usuário
     };
 
-    return new Intl.DateTimeFormat("pt-BR", options).format(dt);
+    let f = new Intl.DateTimeFormat("pt-BR", options).format(dt); 
+    return f.split(", ")[0] + " às " + f.split(", ")[1].substring(0,5);
 
 }
 
@@ -268,7 +269,7 @@ function esconderPagina(usuario){
             atalhos = ["index","favoritos","perfil","avaliacoes"];
         }
 
-        let headerhtml = "<div class='container mt-3'>{user}<div class='row m-2'><div class='col-12 text-center'><img class='img-fluid' src='assets/logo.png'></div></div><div class='row'><nav class=' navbar navbar-expand-md'><div class='container-fluid d-flex justify-content-center text-center'><button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarConteudo' aria-controls='navbarConteudo' aria-expanded='false' aria-label='Alternar navegação'><a>Menu</a></button><div class='collapse navbar-collapse' id='navbarConteudo'><ul class='navbar-nav mx-auto mt-2'>{ATALHOS}</nav></ul></div></div></div></div>";
+        let headerhtml = "<div class='container mt-3'>{user}<div class='row m-2'><div class='col-12 text-center'><a href='index.html'><img class='img-fluid' src='assets/logo.png'></a></div></div><div class='row'><nav class=' navbar navbar-expand-md'><div class='container-fluid d-flex justify-content-center text-center'><button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarConteudo' aria-controls='navbarConteudo' aria-expanded='false' aria-label='Alternar navegação'><a>Menu</a></button><div class='collapse navbar-collapse' id='navbarConteudo'><ul class='navbar-nav mx-auto mt-2'>{ATALHOS}</nav></ul></div></div></div></div>";
 
         // Caso o usuário esteja logado, adicionar ao cabeçalho seu nome e link para deslogar
         if(usuario==null){
@@ -342,11 +343,16 @@ function esconderPagina(usuario){
     personalizaIconesFooter();
 }
 
+let dominio = "";
+if(location.pathname.substring(0,5) == "https"){
+    console.log("hospedagem");
+    dominio = "https://meu-cinema-backend.onrender.com";
+}else{
+    console.log("local");
+    dominio = "http://127.0.0.1:5000";
+};
+
 // Variáveis para armazenar as rotas do back-end
-
-//let dominio = "http://127.0.0.1:5000";
-let dominio = "https://meu-cinema-backend.onrender.com";
-
 let rota_login = dominio + "/login";
 let rota_cadastro = dominio + "/cadastro";
 let rota_logout = dominio + "/logout";
@@ -362,9 +368,6 @@ let rota_serie_generos = dominio + "/series_generos";
 let rota_filme_generos = dominio + "/filmes_generos";
 let rota_favoritos = dominio + "/favoritos";
 let rota_paises = dominio + "/paises";
-
-
-
 let rota_provedores = dominio + "/provedores";
 let rota_avaliacoes = dominio + "/avaliacoes"
 

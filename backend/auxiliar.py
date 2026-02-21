@@ -100,5 +100,14 @@ def buscaSiteProvedor(id,name):
             return i["site"]
     return "https://www.google.com/search?q="+name
 
-CAMINHO_TMDB_IMAGEM = "https://image.tmdb.org/t/p/w500"
-CAMINHO_TMDB_IMAGEM_W = "https://image.tmdb.org/t/p/w1920"
+def definirImagem(url,wallpaper=False):
+    CAMINHO_TMDB_IMAGEM = "https://image.tmdb.org/t/p/w500"
+    CAMINHO_TMDB_IMAGEM_W = "https://image.tmdb.org/t/p/w1920"
+    
+
+    if url != None:
+        if wallpaper == True:
+            return CAMINHO_TMDB_IMAGEM_W + url
+        return CAMINHO_TMDB_IMAGEM + url
+    
+    return "assets/sem_capa.png"

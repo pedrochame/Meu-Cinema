@@ -8,13 +8,11 @@ let painelConteudo = document.querySelector("#painel-conteudo");
 // Se estiver, chamamos as funções que se comunicarão com o back-end buscando filmes/séries e criando os elementos para que sejam exibidos na tela.
 document.addEventListener("DOMContentLoaded", async () => {
 
-    esconderPagina();
-
-
     let usuario = await buscaUsuario();
     if(usuario == null){
         redireciona(caminho_tela_login);
     }else{
+        esconderPagina(usuario);
         await favoritos();
     }
     exibirPagina();

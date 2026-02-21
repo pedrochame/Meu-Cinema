@@ -419,8 +419,8 @@ def getFilme(id):
         "nome":str(dados["title"]),
         "data": str(dados["release_date"].split("-")[0]),
         "duracao":str(dados["runtime"])+" min",
-        "capa":auxiliar.CAMINHO_TMDB_IMAGEM + str(dados["poster_path"]),
-        "wallpaper":auxiliar.CAMINHO_TMDB_IMAGEM_W+str(dados["backdrop_path"]),
+        "capa":auxiliar.definirImagem(dados["poster_path"]),
+        "wallpaper":auxiliar.definirImagem(dados["backdrop_path"],True),
         "sinopse":str(dados["overview"]),
     }
     
@@ -457,8 +457,8 @@ def getSerie(id):
         "nome":str(dados["name"]),
         "temporadas":str(dados["number_of_seasons"]),
         "episodios":str(dados["number_of_episodes"]),
-        "capa":auxiliar.CAMINHO_TMDB_IMAGEM + str(dados["poster_path"]),
-        "wallpaper":auxiliar.CAMINHO_TMDB_IMAGEM_W+str(dados["backdrop_path"]),
+        "capa":auxiliar.definirImagem(dados["poster_path"]),
+        "wallpaper":auxiliar.definirImagem(dados["backdrop_path"],True),
         "sinopse":str(dados["overview"]),
     }
 
@@ -752,7 +752,7 @@ def registraFavoritosAvaliados(filmes, tipo, avaliarFavoritos = True, avaliarAva
         if "notaImdb" in filme.keys():
             filme["notaImdb"] = round(float(filme["notaImdb"]),1)
         if "poster_path" in filme.keys():
-            filme["poster_path"] = auxiliar.CAMINHO_TMDB_IMAGEM+filme["poster_path"]
+            filme["poster_path"] = auxiliar.definirImagem(filme["poster_path"])
     if current_user.is_authenticated:
         
         if avaliarFavoritos:
@@ -782,7 +782,7 @@ def registraFavoritosAvaliados(filmes, tipo, avaliarFavoritos = True, avaliarAva
 # Função que recebe id, nome e caminho para imagem de provedor, e retorna um dicionário
 def retornaDictProvedor(id, nome, img):
     return {
-            "img" :auxiliar.CAMINHO_TMDB_IMAGEM+str(img),
+            "img" :auxiliar.definirImagem(img),
             "nome":nome,
             "site":auxiliar.buscaSiteProvedor(id,nome),
             "provedor_id":id
@@ -801,7 +801,7 @@ def retornaDictAvaliacao(dados, avaliado):
     return {
             "id": dados["id"],
             "nome":dados[nome],
-            "img" :auxiliar.CAMINHO_TMDB_IMAGEM+str(dados["poster_path"]),
+            "img" :auxiliar.definirImagem(dados["poster_path"]),
             "nota":avaliado["nota"],
             "data":avaliado["data"],
             "tipo":tipo,
@@ -819,7 +819,7 @@ def retornaDictFavorito(dados,tipo):
         campo_data = "first_air_date"
         nome = "name"
     return  {
-        "img" :auxiliar.CAMINHO_TMDB_IMAGEM+str(dados["poster_path"]),
+        "img" :auxiliar.definirImagem(dados["poster_path"]),
         "nome":str(dados[nome]),
         "data":str(dados[campo_data]),
         "id":str(dados["id"]),
