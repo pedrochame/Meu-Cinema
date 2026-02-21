@@ -420,7 +420,7 @@ def getFilme(id):
         "data": str(dados["release_date"].split("-")[0]),
         "duracao":str(dados["runtime"])+" min",
         "capa":auxiliar.CAMINHO_TMDB_IMAGEM + str(dados["poster_path"]),
-        "wallpaper":auxiliar.CAMINHO_TMDB_IMAGEM+str(dados["backdrop_path"]),
+        "wallpaper":auxiliar.CAMINHO_TMDB_IMAGEM_W+str(dados["backdrop_path"]),
         "sinopse":str(dados["overview"]),
     }
     
@@ -458,7 +458,7 @@ def getSerie(id):
         "temporadas":str(dados["number_of_seasons"]),
         "episodios":str(dados["number_of_episodes"]),
         "capa":auxiliar.CAMINHO_TMDB_IMAGEM + str(dados["poster_path"]),
-        "wallpaper":auxiliar.CAMINHO_TMDB_IMAGEM+str(dados["backdrop_path"]),
+        "wallpaper":auxiliar.CAMINHO_TMDB_IMAGEM_W+str(dados["backdrop_path"]),
         "sinopse":str(dados["overview"]),
     }
 
