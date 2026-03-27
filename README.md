@@ -1,49 +1,84 @@
 # 🎬 Meu Cinema
 
-Meu Cinema é um projeto web simples desenvolvido com o objetivo de praticar e aprimorar conhecimentos em **programação, integração com APIs e bancos de dados**.
+Aplicação web para busca de filmes e séries, com foco em apresentar informações de forma simples e sem spoilers.
 
-A aplicação permite pesquisar filmes e séries, visualizar detalhes, salvar favoritos e realizar avaliações, utilizando uma interface web simples e intuitiva.
-
-> ⚠️ Projeto em desenvolvimento (pode conter funcionalidades incompletas ou em ajustes).
+🔗 Acesse: https://meucine.netlify.app
 
 ---
 
 ## 🚀 Funcionalidades
 
-- 🔎 Pesquisa de filmes e séries (com filtros para gênero e país)
-- 📄 Visualização de detalhes (sinopse, data de lançamento, plataforma de streaming, etc.)
-- ⭐ Adição/remoção de favoritos e avaliação
-- 🌐 Consumo da API do [The Movie Database (TMDB)](https://www.themoviedb.org/)
-- 📊 Integração com banco de dados para salvar usuários e favoritos
+- 🔍 Busca por filmes e séries por nome  
+- 🎭 Filtro por gênero, ano e tipo de conteúdo  
+- 📄 Visualização de informações como sinopse, número de episódios e onde assistir  
+- ⭐ Avaliação de filmes e séries (nota de 1 a 10)  
+- ❤️ Sistema de favoritos por usuário  
+- 👤 Cadastro e autenticação de usuários  
 
 ---
 
-## 🛠️ Tecnologias utilizadas
+## 🧠 Tecnologias utilizadas
 
-### Backend:
-- Python
-- Flask
-- PostgreSQL
+### Backend
+- Python (Flask)
+- APIs REST
+- Integração com API externa (TMDB)
+- Banco de dados relacional (SQL)
 
-### Frontend:
+### Frontend
 - HTML
-- CSS
+- CSS (Bootstrap)
 - JavaScript
 
-### Outras:
-- API TMDB
-- Bootstrap
+---
+
+## ⚙️ Como funciona
+
+O frontend realiza requisições para o backend, que por sua vez se comunica com a API do TMDB para obter dados atualizados de filmes e séries.
+
+O backend também é responsável por:
+- autenticação de usuários  
+- persistência de favoritos e avaliações  
+- tratamento e organização dos dados antes de enviar ao frontend  
 
 ---
 
-## 📚 Objetivo do projeto
+## 🗄️ Banco de dados
 
-O principal objetivo deste projeto é o **aprendizado prático** de:
+O sistema utiliza banco de dados relacional para armazenar:
 
-- Consumo de APIs externas
-- Integração front-end e back-end
-- Manipulação de banco de dados relacional
-- Desenvolvimento de aplicações web completas
-- Organização e estruturação de projetos web
+- usuários  
+- favoritos  
+- avaliações  
 
 ---
+
+## 🔐 Autenticação
+
+- Login com email e senha  
+- Senhas armazenadas com hash (Werkzeug)  
+- Controle de sessão para manter usuário autenticado  
+
+---
+
+## 📌 Objetivo do projeto
+
+Este projeto foi desenvolvido com o objetivo de:
+
+- praticar desenvolvimento backend com Python  
+- trabalhar com APIs externas  
+- implementar autenticação e persistência de dados  
+- construir uma aplicação web completa  
+
+---
+
+## 💡 Motivação
+
+A ideia surgiu da necessidade de consultar informações sobre filmes e séries sem receber spoilers ou excesso de detalhes, como acontece em plataformas tradicionais.
+
+---
+
+## 📫 Contato
+
+- LinkedIn: https://linkedin.com/in/pedrochame  
+- Email: pedrohik@gmail.com  
