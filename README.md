@@ -80,6 +80,16 @@ A ideia surgiu da necessidade de consultar informações sobre filmes e séries 
 
 ---
 
+## 📸 Preview
+
+### 🔍 Busca de Filme
+<img src="images/search.png" width="700">
+
+### 🎬 Informações de Filme
+<img src="images/details.png" width="700">
+
+---
+
 ## 📫 Contato
 
 - LinkedIn: https://linkedin.com/in/pedrochame  
