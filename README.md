@@ -4,6 +4,8 @@ Aplicação web para busca de filmes e séries, com foco em apresentar informaç
 
 🔗 Acesse: https://meucine.netlify.app
 
+> ⚠️ O backend está hospedado em ambiente gratuito (Render), podendo levar alguns segundos para responder após período de inatividade.
+
 ---
 
 ## 🚀 Funcionalidades
