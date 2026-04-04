@@ -8,14 +8,16 @@ let painelConteudo = document.querySelector("#painel-conteudo");
 // Se estiver, chamamos as funções que se comunicarão com o back-end buscando filmes/séries e criando os elementos para que sejam exibidos na tela.
 document.addEventListener("DOMContentLoaded", async () => {
 
+    esconderPagina();
+    
     let usuario = await buscaUsuario();
     if(usuario == null){
         redireciona(caminho_tela_login);
-    }else{
-        esconderPagina(usuario);
-        await favoritos();
     }
-    exibirPagina();
+    
+    
+    await favoritos();
+
 });
 
 // Função que faz requsição ao back-end na rota de favoritos
@@ -68,24 +70,6 @@ async function configuraDiv(filme){
     filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><i>"+filme["tipo_label"]+"</i></div>";
 
     //Indicador de avaliado (se for)
-
-    /*
-    let response = await fetch(rota_avaliacoes+"/"+filme["id"]+"?tipo="+filme["tipo"],{
-            method:"GET",
-            credentials:"include",
-            headers: { "Content-Type": "application/json" },
-    });
-
-    if(response.status==200){
-        let dados = await response.json();
-        console.log(dados);
-        if(dados.length>0){
-            filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/favorito.png'><img class='img-avaliado' src='assets/avaliado.png'></div>";
-        }else{
-            filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/favorito.png'></div>";
-        }
-    }
-    */
     if(filme["avaliado"] == true){
         filmeDiv.innerHTML += "<div class='d-flex justify-content-center'><img class='img-favorito' src='assets/favorito.png'><img class='img-avaliado' src='assets/avaliado.png'></div>";
     }else{

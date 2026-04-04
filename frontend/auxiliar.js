@@ -134,6 +134,7 @@ async function logout(){
         
     // Se a resposta for positiva (status 200), o usuário é redirecionado para a página de login
     if(response.status == 200){
+        sessionStorage.clear();
         window.location = "login.html";
     }
 
@@ -141,6 +142,7 @@ async function logout(){
 
 // Função que verifica se o usuário está logado no sistema
 async function buscaUsuario(){
+
     // Caso ocorra falha na requisição, é por conta do back-end estar fora ar, então redirecionar para página que informará ao usuário para aguardar e tentar novamente
     let response = null;
     try{
@@ -150,16 +152,28 @@ async function buscaUsuario(){
     });
     }catch{
         redireciona("falha.html");
+
+        // Ao falhar, limpar sessionStorage
+        sessionStorage.clear();
+
     }
     switch(response.status){
         
         // Se a resposta for que o usuário não está autorizado (status 401), é retornado NULL
         case 401: 
+
+            // Ao verificar não autorização, limpar sessionStorage
+            sessionStorage.clear();
+
             return null;
         
         // Se a resposta for positiva (status 200, usuário logado), seus dados são retornados
         case 200:
             let dados = await response.json();
+            
+            // Ao verificar autorização, guardar nome em sessionStorage
+            sessionStorage.setItem("nomeUsuario", dados["Nome"]);
+            
             return dados;
     }
 
@@ -223,60 +237,75 @@ function personalizaIconesFooter(){
 }
 
 
-function esconderPagina(usuario){
+function esconderPagina(){
+
+    // Caso haja o item do nome de usuário em sessionStorage, entendemos que o mesmo está logado
+    // Obs.: Caso não esteja autenticado no back-end, qualquer tentativa de operação que precise de autenticação,
+    // o back-end irá rejeitar
+    usuario = sessionStorage.getItem("nomeUsuario");
+    console.log(usuario);
 
     // Adicionando div de cabeçalho
     if(document.querySelector("#divHeader") == null){ 
         let header = document.createElement("div");
         header.id = "divHeader";
         
-        let atalhos = [];
-
-
-        // Se usuário está logado, todas as opções aparecem. Se não, somente de login e início
-        //let usuario = null;
-        
-        // Caso ocorra alguma exceção ao buscar os dados do usuário, é por conta do back-end não responder a requisição... então, exibir mensagem para que o usuário aguarde algum tempo para atualizar a página
-
-
-        //
         const divAguarde = document.createElement("div");
         divAguarde.id = "divAguarde";
         divAguarde.className = "container text-center mb-4 mt-4";
         divAguarde.innerHTML = "<img class='mb-4' src='assets/loading.gif'><p  style='color:whitesmoke;font-size:24px;' >Aguarde...</p>";
-        document.body.appendChild(divAguarde);
-        //
-/*
-        try {
-            usuario = await buscaUsuario();   
-        } catch (error) {
 
-            const c = document.createElement("div");
-            c.className = "container text-center mt-5";
-            c.innerHTML = "<p style='color:whitesmoke;font-size:24px;' >Back-end fora do ar no momento... por favor, aguarde 30 segundos e atualize a página!";
-            document.body.removeChild(divAguarde);
-            document.body.appendChild(c);
-            return;
-        }
-*/
-        //
-        document.body.removeChild(divAguarde);
-        //
+        // Se usuário está logado, todas as opções aparecem. Se não, somente de login e início
 
+        let atalhos = [];
         if(usuario==null){
             atalhos = ["login","index"];
         }else{
             atalhos = ["index","favoritos","perfil","avaliacoes"];
         }
 
-        let headerhtml = "<div class='container mt-3'>{user}<div class='row m-2'><div class='col-12 text-center'><a href='index.html'><img class='img-fluid' src='assets/logo.png'></a></div></div><div class='row'><nav class=' navbar navbar-expand-md'><div class='container-fluid d-flex justify-content-center text-center'><button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarConteudo' aria-controls='navbarConteudo' aria-expanded='false' aria-label='Alternar navegação'><a>Menu</a></button><div class='collapse navbar-collapse' id='navbarConteudo'><ul class='navbar-nav mx-auto mt-2'>{ATALHOS}</nav></ul></div></div></div></div>";
+        let headerhtml = `
+            <div class='container mt-3'>{user}
+                <div class='row m-2'>
+                    <div class='col-12 text-center'>
+                        <a href='index.html'>
+                            <img class='img-fluid' src='assets/logo.png'>
+                        </a>
+                    </div>
+                </div>
+                <div class='row'>
+                    <nav class=' navbar navbar-expand-md'>
+                        <div class='container-fluid d-flex justify-content-center text-center'>
+                            <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarConteudo' aria-controls='navbarConteudo' aria-expanded='false' aria-label='Alternar navegação'>
+                                <a>
+                                    Menu
+                                </a>
+                            </button>
+                        <div class='collapse navbar-collapse' id='navbarConteudo'>
+                            <ul class='navbar-nav mx-auto mt-2'>
+                                {ATALHOS}
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        `;
 
         // Caso o usuário esteja logado, adicionar ao cabeçalho seu nome e link para deslogar
         if(usuario==null){
             headerhtml = headerhtml.replace("{user}","");
         }else{
             headerhtml = headerhtml.replace("{user}",
-                "<div class='container'><div class='row'><div class='col-12 text-center'><p>Olá, "+usuario["Nome"]+"! (<a onclick='logout()'>Sair</a>)</p></div></div></div>");
+                `<div class='container'>
+                    <div class='row'>
+                        <div class='col-12 text-center'>
+                            <p>
+                                Olá, `+usuario+` ! (<a onclick='logout()'>Sair</a>)
+                            </p>
+                        </div>
+                    </div>
+                </div>`
+            );
         }
         //
 
@@ -314,10 +343,8 @@ function esconderPagina(usuario){
     }
 
 
-
-
-            // Adicionando div de carregamento
-        if(document.querySelector("#divLoading") == null){
+    // Adicionando div de carregamento
+    if(document.querySelector("#divLoading") == null){
 
             let loading = document.createElement("div");
             loading.id = "divLoading";
@@ -325,7 +352,7 @@ function esconderPagina(usuario){
             loading.innerHTML = "<div class='row'><div class='col-12 text-center mt-5 mb-5 '><img src='assets/loading.gif'></div></div></div>";
             document.body.appendChild(loading);
 
-        }
+    }
 
 
 
@@ -339,8 +366,8 @@ function esconderPagina(usuario){
     document.body.appendChild(divHeader);
     document.body.appendChild(divLoading);
     document.body.appendChild(divFooter);
-            
-    personalizaIconesFooter();
+
+    exibirPagina();
 }
 
 let dominio = "";

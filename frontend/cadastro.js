@@ -48,14 +48,15 @@ document.querySelectorAll(".campo").forEach(e => {
 // Assim que a página estiver pronta, é verificado se o usuário está logado.
 // Se estiver, redirecionamos para a tela de perfil.
 document.addEventListener("DOMContentLoaded", async () => {
-    esconderPagina();
+    
     let usuario = await buscaUsuario();
     if(usuario != null){
-        window.location = "perfil.html";
+        redireciona(caminho_tela_perfil);
     }
-    exibirPagina();
+    
+    esconderPagina();
 
-        // Ao clicar no link da página de login, redirecionar
+    // Ao clicar no link da página de login, redirecionar
     document.querySelector("#linkLogin").addEventListener("click",()=>{
         redireciona(caminho_tela_login);
     });

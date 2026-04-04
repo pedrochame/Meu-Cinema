@@ -12,20 +12,18 @@ btLogout.addEventListener("click", async ()=>{
 // Assim que a página estiver pronta, é verificado se o usuário está logado.
 // Se estiver, seus dados são exibidos na página. Se não, redirecionamos para a tela de login.
 document.addEventListener("DOMContentLoaded", async () => {
+    
+    esconderPagina();
+
     let usuario = await buscaUsuario();
-    if(usuario != null){
-        nomeUsuario.textContent = usuario["Nome"];
-        idUsuario.textContent = usuario["ID"];
-        emailUsuario.textContent = usuario["Email"];
-    }else{
+    if(usuario == null){
         redireciona(caminho_tela_login);
     }
-    esconderPagina(usuario);
+
+    nomeUsuario.textContent = usuario["Nome"];
+    idUsuario.textContent = usuario["ID"];
+    emailUsuario.textContent = usuario["Email"];
     
-    // 21.02.26 - Por enquanto, não exibir contagem de favoritos
-    //await favoritos();
-    
-    exibirPagina();
 });
 
 // Função que faz requsição ao back-end na rota de favoritos

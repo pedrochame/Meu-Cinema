@@ -30,31 +30,21 @@ let estrelas = 10;
 // Se estiver, chamamos a função que se comunicará com o back-end buscando o determinado filme/série e a função que irá preencher os dados na tela com as informações obtidas.
 document.addEventListener("DOMContentLoaded", async () => {
     
-    let usuario = await buscaUsuario();
-    if(usuario!=null){
-        usuarioLogado = true;
-    }else{
-        usuarioLogado = false;
-    }
-    esconderPagina(usuario);
-    //if(usuario == null){
-       // redireciona(caminho_tela_login);
-    //}else{
-        let dados = await buscaFilmeSerie(id);
+    esconderPagina();
 
-        await configBtFavorito();
+    let dados = await buscaFilmeSerie(id);
+    configPagina(dados);
 
-        configPagina(dados);
+    // Configurando favorito
+    await configBtFavorito();
+    
+    //Configurando provedores
+    let dadosProvedores = await configProvedores();
+    configPaginaProvedores(dadosProvedores);
 
-        //Configurando provedores
-        let dadosProvedores = await configProvedores();
-        configPaginaProvedores(dadosProvedores);
+    //Configurando painel de avaliação
+    await configAvaliacao();
 
-        //Configurando painel de avaliação
-        await configAvaliacao();
-
-    //}
-    exibirPagina();
 });
 
 // Função que configura a DIV responsável pela exibição da avaliação feita pelo usuário
@@ -98,6 +88,8 @@ async function configAvaliacao(){
         }
 
         liberarAvaliacao();
+        
+        painelAvaliacao.style.display = "block";
     
     }else{
 
@@ -327,6 +319,8 @@ function configPaginaProvedores(dados){
 
 
     });
+        
+        painelProvedores.style.display = "block";
 
 }
 
@@ -416,7 +410,11 @@ async function configBtFavorito(){
                 btFavorito.className = btFavorito.className.replace("btn-danger","btn-success");
                 ehFavorito = false;
             }
-        break;
+            
+
+            btFavorito.style.display = "inline";
+    
+            break;
         
         default:
             exibirErro();

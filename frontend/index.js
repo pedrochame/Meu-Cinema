@@ -14,29 +14,19 @@ let usuario = null;
 // Se não estiver, redirecionamos para a tela de login.
 // Se estiver, chamamos as funções que se comunicarão com o back-end buscando gêneros, países e filmes/séries e configurarão os elementos a serem exibidos em tela.
 document.addEventListener("DOMContentLoaded", async () => {
-    
-    
-    
-    usuario = await buscaUsuario();
-    esconderPagina(usuario);
-    
-    
+
+
+    esconderPagina();
+    await buscaConteudo();
     await generos();
     await paises();
-
-    await anos(); // Função que adiciona as opções de anos no campo de busca 
-
-
-
-    await buscaConteudo();
-
-    exibirPagina();
+    await anos();
 
 });
 
 // Quando o botão de busca é clicado, chamamos a função que se comunicará com o back-end na rota de pesquisa.
 btBuscar.addEventListener("click", async () => {
-    esconderPagina(usuario);
+    esconderPagina();
     await buscaConteudo();
     exibirPagina();
 

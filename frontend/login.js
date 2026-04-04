@@ -16,15 +16,22 @@ async function login(nomeUsuario,senhaUsuario){
         })
     });
 
-    // Se a resposta for positiva (status 200), o usuário é redirecionado para a tela de perfil
+    // Se a resposta for positiva (status 200), o usuário é redirecionado para a tela inicial
     if(response.status == 200){
-        //window.location = "perfil.html";
         window.location = "index.html";
+
+        // Ao logar, guardar informação no sessionStorage
+        sessionStorage.setItem("nomeUsuario", nomeUsuario);
+
     }else{
         // Se não, a mensagem retornada pelo Back-End será exibida na tela
         let dados = await response.json();
         
         info.textContent = dados["Mensagem"];
+        
+        // Ao verificar não autorização, limpar sessionStorage
+        sessionStorage.clear();
+    
     }
 
 }
@@ -41,20 +48,19 @@ btLogin.addEventListener("click", async ()=>{
 // Assim que a página estiver pronta, é verificado se o usuário está logado.
 // Se estiver, redirecionamos para a tela de perfil.
 document.addEventListener("DOMContentLoaded", async () => {
-    
+
     let usuario = await buscaUsuario();
     if(usuario != null){
         redireciona(caminho_tela_perfil);
     }
-    esconderPagina(usuario);
+    
+    esconderPagina();
 
     // Ao clicar no link da página de cadastro, redirecionar
     document.querySelector("#linkCadastro").addEventListener("click",()=>{
         redireciona(caminho_tela_cadastro);
     });
 
-
-    exibirPagina();
 });
 
 // Quando algum campo for focado, a mensagem de informação deixa de ser exibida
