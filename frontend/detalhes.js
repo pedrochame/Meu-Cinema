@@ -35,12 +35,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     let dados = await buscaFilmeSerie(id);
     configPagina(dados);
 
-    // Configurando favorito
-    await configBtFavorito();
-    
     //Configurando provedores
     let dadosProvedores = await configProvedores();
     configPaginaProvedores(dadosProvedores);
+
+    // Configurando favorito
+    await configBtFavorito();
 
     //Configurando painel de avaliação
     await configAvaliacao();
